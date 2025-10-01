@@ -1,74 +1,145 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — Biggest Fatty</title>
-  <link rel="stylesheet" href="admin.css">
-</head>
-<body>
-  <div class="wrap">
-    <!-- Login -->
-    <div id="loginCard" class="card soft">
-      <h1>Admin Login</h1>
-      <p>Sign in with Google to manage the game.</p>
-      <button id="loginBtn" class="btn">Login with Google</button>
-    </div>
+// ----- Firebase Refs -----
+const db = firebase.firestore();
+const auth = firebase.auth();
+const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
 
-    <!-- Admin Content -->
-    <div id="adminContent" class="hidden">
-      <h1 class="title">Admin Panel</h1>
+// ----- DOM Refs -----
+const loginBtn = document.getElementById("loginBtn");
+const loginCard = document.getElementById("loginCard");
+const adminContent = document.getElementById("adminContent");
 
-      <!-- Announcement -->
-      <div class="card soft">
-        <h2>Post Announcement</h2>
-        <textarea id="announcementInput" class="input" placeholder="Enter announcement message"></textarea>
-        <button id="postAnnouncementBtn" class="btn">Post Announcement</button>
-      </div>
+const announcementInput = document.getElementById("announcementInput");
+const postAnnouncementBtn = document.getElementById("postAnnouncementBtn");
 
-      <!-- Event -->
-      <div class="card soft">
-        <h2>Manage Event</h2>
-        <input id="eventNameInput" class="input" placeholder="Event name">
-        <input id="eventMultiplierInput" class="input" type="number" min="1" value="2">
-        <button id="startEventBtn" class="btn">Start Event</button>
-        <button id="endEventBtn" class="btn danger">End Event</button>
-      </div>
+const eventNameInput = document.getElementById("eventNameInput");
+const eventMultiplierInput = document.getElementById("eventMultiplierInput");
+const startEventBtn = document.getElementById("startEventBtn");
+const endEventBtn = document.getElementById("endEventBtn");
 
-      <!-- Reset Score -->
-      <div class="card soft">
-        <h2>Reset Player Score</h2>
-        <p>Enter a player’s exact name to reset their score to 0.</p>
-        <input id="resetPlayerInput" class="input" placeholder="Player name" />
-        <button id="resetPlayerBtn" class="btn">Reset Score</button>
-      </div>
+const resetPlayerInput = document.getElementById("resetPlayerInput");
+const resetPlayerBtn = document.getElementById("resetPlayerBtn");
 
-      <!-- Leaderboard -->
-      <div class="card soft">
-        <h2>Leaderboard</h2>
-        <ol id="leaderboardList" class="lb-list"></ol>
-      </div>
-    </div>
-  </div>
+const lbList = document.getElementById("leaderboardList");
 
-  <!-- Firebase (must load first) -->
-  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
-      authDomain: "sebisafatty.firebaseapp.com",
-      projectId: "sebisafatty",
-      storageBucket: "sebisafatty.firebasestorage.app",
-      messagingSenderId: "651122471293",
-      appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
-      measurementId: "G-KYW4WDBXH1"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
+// ----- Login -----
+loginBtn.addEventListener("click", () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
 
-  <!-- Admin Logic (must load last) -->
-  <script src="admin.js"></script>
-</body>
-</html>
+  if (/Mobi|Android/i.test(navigator.userAgent)) {
+    // Use redirect on mobile
+    auth.signInWithRedirect(provider);
+  } else {
+    // Use popup on desktop
+    auth.signInWithPopup(provider).catch(e => {
+      alert("Login failed: " + e.message);
+    });
+  }
+});
+
+// Handle redirect result (mobile)
+auth.getRedirectResult().then(result => {
+  if (result.user && result.user.email === ADMIN_EMAIL) {
+    loginCard.classList.add("hidden");
+    adminContent.classList.remove("hidden");
+    loadLeaderboard();
+  }
+}).catch(e => console.error("Redirect login error:", e));
+
+// Handle auth state changes
+auth.onAuthStateChanged(user => {
+  if (user && user.email === ADMIN_EMAIL) {
+    loginCard.classList.add("hidden");
+    adminContent.classList.remove("hidden");
+    loadLeaderboard();
+  }
+});
+
+// ----- Announcements -----
+if (postAnnouncementBtn) {
+  postAnnouncementBtn.addEventListener("click", async () => {
+    const msg = announcementInput.value.trim();
+    if (!msg) return alert("Please enter a message.");
+    try {
+      await db.collection("announcements").add({
+        message: msg,
+        created: Date.now()
+      });
+      alert("✅ Announcement posted!");
+      announcementInput.value = "";
+    } catch (e) {
+      console.error(e);
+      alert("Error posting announcement.");
+    }
+  });
+}
+
+// ----- Events -----
+if (startEventBtn) {
+  startEventBtn.addEventListener("click", async () => {
+    const name = eventNameInput.value.trim() || "Special Event";
+    const multiplier = parseFloat(eventMultiplierInput.value) || 1;
+    try {
+      await db.collection("events").doc("current").set({
+        name,
+        multiplier,
+        created: Date.now()
+      });
+      alert(`✅ Event "${name}" started (${multiplier}x)`);
+    } catch (e) {
+      console.error(e);
+      alert("Error starting event.");
+    }
+  });
+}
+
+if (endEventBtn) {
+  endEventBtn.addEventListener("click", async () => {
+    try {
+      await db.collection("events").doc("current").delete();
+      alert("✅ Event ended.");
+    } catch (e) {
+      console.error(e);
+      alert("Error ending event.");
+    }
+  });
+}
+
+// ----- Reset Player -----
+if (resetPlayerBtn) {
+  resetPlayerBtn.addEventListener("click", async () => {
+    const name = (resetPlayerInput.value || "").trim();
+    if (!name) return alert("Enter a player name.");
+    try {
+      await db.collection("leaderboard").doc(name).set({
+        score: 0,
+        updated: Date.now()
+      }, { merge: true });
+      alert(`✅ Reset ${name}'s score to 0`);
+      resetPlayerInput.value = "";
+      loadLeaderboard();
+    } catch (e) {
+      console.error(e);
+      alert("Error resetting score.");
+    }
+  });
+}
+
+// ----- Leaderboard -----
+async function loadLeaderboard() {
+  lbList.innerHTML = "";
+  try {
+    const snap = await db.collection("leaderboard")
+      .orderBy("score", "desc")
+      .limit(20)
+      .get();
+    snap.forEach(doc => {
+      const d = doc.data();
+      const li = document.createElement("li");
+      li.textContent = `${doc.id} — ${d.score}`;
+      lbList.appendChild(li);
+    });
+  } catch (e) {
+    console.error(e);
+    lbList.innerHTML = "<li>Error loading leaderboard.</li>";
+  }
+}
