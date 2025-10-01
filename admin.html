@@ -11,16 +11,18 @@
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
 
   <script>
-    // Firebase config (same as your game’s config)
+    // ✅ Your real Firebase config
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
+      authDomain: "sebisafatty.firebaseapp.com",
+      projectId: "sebisafatty",
+      storageBucket: "sebisafatty.firebasestorage.app",
+      messagingSenderId: "651122471293",
+      appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
+      measurementId: "G-KYW4WDBXH1"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     window._db = firebase.firestore();
     window._auth = firebase.auth();
