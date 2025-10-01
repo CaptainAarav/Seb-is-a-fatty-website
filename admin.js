@@ -119,8 +119,9 @@ async function loadLeaderboard() {
       lbList.appendChild(li);
     }
   } catch (err) {
+    console.error("Leaderboard load error:", err);
     const li = document.createElement("li");
-    li.textContent = "Error loading leaderboard: " + err.message;
+    li.textContent = "Error loading leaderboard.";
     lbList.appendChild(li);
   }
 }
