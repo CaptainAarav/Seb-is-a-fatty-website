@@ -51,7 +51,7 @@
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase (must load first) -->
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
@@ -66,10 +66,9 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
-    window._db = firebase.firestore();
-    window._auth = firebase.auth();
   </script>
 
+  <!-- Admin Logic (must load last) -->
   <script src="admin.js"></script>
 </body>
 </html>
