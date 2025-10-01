@@ -31,6 +31,7 @@ const nameRow = document.getElementById("nameRow");
 const playerNameInput = document.getElementById("playerNameInput");
 const saveNameBtn = document.getElementById("saveNameBtn");
 const youAre = document.getElementById("youAre");
+const deleteNameBtn = document.getElementById("deleteNameBtn");
 
 // Audio map
 const audios = {
@@ -97,15 +98,15 @@ function updateDisplay(){
   maybePushLeaderboard();
 }
 
-// RNG
+// RNG with 0.01% Aarav chance
 function pickWinner(){
-  const r = Math.floor(Math.random()*1000);
-  if (r < 800) return "Sebastian Kavanagh"; // 80%
-  if (r < 900) return "Michael Winsor";     // 10%
-  if (r < 950) return "Ibrahim";            // 5%
-  if (r < 960) return "Bobby";              // 1%
-  if (r < 999) return "Peter";              // 3.9%
-  return "Aarav Sahni";                     // 0.1%
+  const r = Math.floor(Math.random()*10000); // 0–9999
+  if (r < 8000) return "Sebastian Kavanagh"; // 80%
+  if (r < 9000) return "Michael Winsor";     // 10%
+  if (r < 9500) return "Ibrahim";            // 5%
+  if (r < 9600) return "Bobby";              // 1%
+  if (r < 9999) return "Peter";              // 3.99%
+  return "Aarav Sahni";                      // 0.01%
 }
 
 // Reveal button
@@ -198,6 +199,21 @@ saveNameBtn.addEventListener("click", ()=>{
   loadLeaderboard();
 });
 
+// Remove Me button
+async function deleteMyScore() {
+  if (!db || !playerName) return;
+  try {
+    await db.collection("leaderboard").doc(playerName).delete();
+    playerName = "";
+    localStorage.removeItem(NAME_KEY);
+    refreshNameUI();
+    loadLeaderboard();
+  } catch(e) {
+    console.error("Failed to delete score:", e);
+  }
+}
+deleteNameBtn.addEventListener("click", deleteMyScore);
+
 async function maybePushLeaderboard(force=false){
   if (!db || !playerName) return;
   const now = Date.now();
@@ -223,15 +239,13 @@ async function loadLeaderboard(){
   }
   try{
     const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
-    let rank = 1;
     snap.forEach(doc=>{
       const d = doc.data();
       const li = document.createElement("li");
-      li.textContent = `${rank}. ${doc.id} — ${d.score}`;
+      li.textContent = `${doc.id} — ${d.score}`;
       lbList.appendChild(li);
-      rank++;
     });
-    if (rank === 1){
+    if (lbList.children.length === 0){
       const li = document.createElement("li");
       li.textContent = "No entries yet.";
       lbList.appendChild(li);

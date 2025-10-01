@@ -185,6 +185,16 @@ body{
 .lb-list{margin:0;padding-left:1.25rem;}
 .lb-list li{margin:6px 0;}
 
+/* Remove Me button */
+.name-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.name-actions .btn {
+  background: #aa4444;
+}
+
 /* Credits */
 #credits{
   position: static;
