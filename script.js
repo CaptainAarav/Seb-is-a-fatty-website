@@ -33,6 +33,9 @@ const saveNameBtn = document.getElementById("saveNameBtn");
 const youAre = document.getElementById("youAre");
 const deleteNameBtn = document.getElementById("deleteNameBtn");
 
+// Announcement DOM
+const banner = document.getElementById("announcementBanner");
+
 // Audio map
 const audios = {
   "Sebastian Kavanagh": document.getElementById("sebastianAudio"),
@@ -212,7 +215,9 @@ async function deleteMyScore() {
     console.error("Failed to delete score:", e);
   }
 }
-deleteNameBtn.addEventListener("click", deleteMyScore);
+if (deleteNameBtn) {
+  deleteNameBtn.addEventListener("click", deleteMyScore);
+}
 
 async function maybePushLeaderboard(force=false){
   if (!db || !playerName) return;
@@ -272,7 +277,26 @@ lbBackdrop.addEventListener("click", (e)=>{
   if (e.target === lbBackdrop) closeLeaderboardBtn.click();
 });
 
+// ----- Announcements -----
+async function loadAnnouncement(){
+  if (!db || !banner) return;
+  try {
+    const snap = await db.collection("announcements").orderBy("created","desc").limit(1).get();
+    if (!snap.empty){
+      const msg = snap.docs[0].data().message;
+      banner.textContent = "📢 " + msg;
+      banner.classList.remove("hidden");
+    } else {
+      banner.classList.add("hidden");
+    }
+  } catch(e){
+    console.warn("Announcement load error:", e);
+  }
+}
+
 // Init
 loadState();
 updateDisplay();
 refreshNameUI();
+loadAnnouncement();
+setInterval(loadAnnouncement, 60000); // auto-refresh announcement every 60s

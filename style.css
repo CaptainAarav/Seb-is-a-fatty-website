@@ -67,9 +67,7 @@ body{
 #revealBtn{
   font-family:Monocraft,system-ui,sans-serif;
   font-size:clamp(1.2rem,3.2vw,2.2rem);
-  display:inline-block;
   cursor:pointer;
-  line-height:1.4;
   padding:20px 54px !important;
   border-radius:22px;
   color:#122016;
@@ -79,15 +77,16 @@ body{
   animation:wiggle 3s infinite, ringPulse 2.6s infinite;
   transform-origin:50% 60%;
 }
+
+/* Animations */
 @keyframes wiggle{
-  0%{transform:rotate(0);}
+  0%,100%{transform:rotate(0);}
   8%{transform:rotate(-1deg);}
   16%{transform:rotate(1deg);}
   24%{transform:rotate(-0.6deg);}
   32%{transform:rotate(0.6deg);}
   40%{transform:rotate(-0.3deg);}
   48%{transform:rotate(0);}
-  100%{transform:rotate(0);}
 }
 @keyframes ringPulse{
   0%,100%{box-shadow:0 10px 30px rgba(223,230,219,.25),0 0 0 6px var(--ring);}
@@ -195,13 +194,33 @@ body{
   background: #aa4444;
 }
 
-/* Credits */
-#credits{
-  position: static;
-  margin-top: 60px;
+/* Announcement Banner */
+.announcement {
+  width: 100%;
+  padding: 12px;
+  background: #ffcc00;
+  color: #000;
+  font-weight: bold;
   text-align: center;
-  color: var(--muted);
-  font-size: 1.2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.announcement.hidden {
+  display: none;
+}
+
+/* Footer */
+.footer {
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  font-size: 1rem;
+  margin-top: 40px;
+}
+.footer p {
+  margin: 6px 0;
 }
 
 /* Responsive */
