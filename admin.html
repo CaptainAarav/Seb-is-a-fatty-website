@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel — Biggest Fatty</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase config (same as your game’s config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    window._db = firebase.firestore();
+    window._auth = firebase.auth();
+  </script>
+</head>
+<body>
+  <h1>Admin Panel — Biggest Fatty</h1>
+
+  <!-- Login -->
+  <div id="loginBox">
+    <button id="loginBtn">Login with Google</button>
+  </div>
+
+  <!-- Hidden until logged in -->
+  <div id="adminPanel" style="display:none;">
+    <p id="adminInfo"></p>
+
+    <!-- Announcements -->
+    <section>
+      <h2>Post Announcement</h2>
+      <input id="announcementInput" type="text" placeholder="Your message">
+      <button id="postAnnouncementBtn">Post</button>
+    </section>
+
+    <!-- Leaderboard -->
+    <section>
+      <h2>Leaderboard Controls</h2>
+      <button id="resetLeaderboardBtn">Reset Entire Leaderboard</button>
+      <input id="resetPlayerInput" type="text" placeholder="Player name">
+      <button id="resetPlayerBtn">Reset Player Score</button>
+    </section>
+
+    <!-- Events -->
+    <section>
+      <h2>Events</h2>
+      <input id="eventNameInput" type="text" placeholder="Event name">
+      <input id="eventMultiplierInput" type="number" placeholder="Multiplier (e.g. 2)">
+      <button id="postEventBtn">Set Event</button>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
