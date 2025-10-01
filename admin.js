@@ -1,8 +1,9 @@
+// ----- Firebase Refs -----
 const db = firebase.firestore();
 const auth = firebase.auth();
 const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
 
-// DOM refs
+// ----- DOM Refs -----
 const loginBtn = document.getElementById("loginBtn");
 const loginCard = document.getElementById("loginCard");
 const adminContent = document.getElementById("adminContent");
@@ -20,19 +21,22 @@ const resetPlayerBtn = document.getElementById("resetPlayerBtn");
 
 const lbList = document.getElementById("leaderboardList");
 
-// ---- Login ----
+// ----- Login -----
 loginBtn.addEventListener("click", () => {
   const provider = new firebase.auth.GoogleAuthProvider();
 
   if (/Mobi|Android/i.test(navigator.userAgent)) {
+    // Use redirect on mobile
     auth.signInWithRedirect(provider);
   } else {
+    // Use popup on desktop
     auth.signInWithPopup(provider).catch(e => {
       alert("Login failed: " + e.message);
     });
   }
 });
 
+// Handle redirect result (mobile)
 auth.getRedirectResult().then(result => {
   if (result.user && result.user.email === ADMIN_EMAIL) {
     loginCard.classList.add("hidden");
@@ -41,6 +45,7 @@ auth.getRedirectResult().then(result => {
   }
 }).catch(e => console.error("Redirect login error:", e));
 
+// Handle auth state changes
 auth.onAuthStateChanged(user => {
   if (user && user.email === ADMIN_EMAIL) {
     loginCard.classList.add("hidden");
@@ -49,7 +54,7 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// ---- Announcements ----
+// ----- Announcements -----
 if (postAnnouncementBtn) {
   postAnnouncementBtn.addEventListener("click", async () => {
     const msg = announcementInput.value.trim();
@@ -68,7 +73,7 @@ if (postAnnouncementBtn) {
   });
 }
 
-// ---- Events ----
+// ----- Events -----
 if (startEventBtn) {
   startEventBtn.addEventListener("click", async () => {
     const name = eventNameInput.value.trim() || "Special Event";
@@ -99,7 +104,7 @@ if (endEventBtn) {
   });
 }
 
-// ---- Reset Player ----
+// ----- Reset Player -----
 if (resetPlayerBtn) {
   resetPlayerBtn.addEventListener("click", async () => {
     const name = (resetPlayerInput.value || "").trim();
@@ -119,7 +124,7 @@ if (resetPlayerBtn) {
   });
 }
 
-// ---- Leaderboard ----
+// ----- Leaderboard -----
 async function loadLeaderboard() {
   lbList.innerHTML = "";
   try {
