@@ -1,5 +1,5 @@
-const db = window._db;
-const auth = window._auth;
+const db = firebase.firestore();
+const auth = firebase.auth();
 const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
 
 // DOM refs
