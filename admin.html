@@ -1,60 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — Biggest Fatty</title>
-  <link rel="stylesheet" href="admin.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Biggest Fatty</title>
+  <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
   <div class="wrap">
-    <!-- Login -->
-    <div id="loginCard" class="card soft">
-      <h1>Admin Login</h1>
-      <p>Sign in with Google to manage the game.</p>
+    <h1>Admin Panel</h1>
+
+    <!-- Login Section -->
+    <div id="loginSection">
       <button id="loginBtn" class="btn">Login with Google</button>
     </div>
 
     <!-- Admin Content -->
     <div id="adminContent" class="hidden">
-      <h1 class="title">Admin Panel</h1>
-
-      <!-- Announcement -->
-      <div class="card soft">
-        <h2>Post Announcement</h2>
-        <textarea id="announcementInput" class="input" placeholder="Enter announcement message"></textarea>
-        <button id="postAnnouncementBtn" class="btn">Post Announcement</button>
+      <div class="top-bar">
+        <p id="welcomeMsg"></p>
+        <button id="logoutBtn" class="btn danger">Logout</button>
       </div>
 
-      <!-- Event -->
-      <div class="card soft">
-        <h2>Manage Event</h2>
-        <input id="eventNameInput" class="input" placeholder="Event name">
-        <input id="eventMultiplierInput" class="input" type="number" min="1" value="2">
-        <button id="startEventBtn" class="btn">Start Event</button>
-        <button id="endEventBtn" class="btn danger">End Event</button>
-      </div>
+      <h2>📢 Announcements</h2>
+      <input id="announcementInput" class="input" placeholder="Enter announcement..." />
+      <button id="postAnnouncementBtn" class="btn">Post Announcement</button>
 
-      <!-- Reset Score -->
-      <div class="card soft">
-        <h2>Reset Player Score</h2>
-        <p>Enter a player’s exact name to reset their score to 0.</p>
-        <input id="resetPlayerInput" class="input" placeholder="Player name" />
-        <button id="resetPlayerBtn" class="btn">Reset Score</button>
-      </div>
+      <h2>🎉 Events</h2>
+      <input id="eventNameInput" class="input" placeholder="Event name..." />
+      <input id="eventMultiplierInput" type="number" class="input" placeholder="Multiplier (e.g. 2)" />
+      <button id="setEventBtn" class="btn">Set Event</button>
+      <button id="clearEventBtn" class="btn danger">Clear Event</button>
 
-      <!-- Leaderboard -->
-      <div class="card soft">
-        <h2>Leaderboard</h2>
-        <ol id="leaderboardList" class="lb-list"></ol>
-      </div>
+      <h2>🏆 Leaderboard</h2>
+      <ol id="leaderboardList" class="lb-list"></ol>
     </div>
   </div>
 
-  <!-- Firebase (must load first) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
@@ -66,9 +53,10 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
   </script>
 
-  <!-- Admin Logic (must load last) -->
   <script src="admin.js"></script>
 </body>
 </html>
