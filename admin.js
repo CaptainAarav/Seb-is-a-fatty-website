@@ -1,127 +1,92 @@
-// Firebase Auth + Firestore
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// DOM references
 const loginBtn = document.getElementById("loginBtn");
-const loginCard = document.getElementById("loginCard");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginSection = document.getElementById("loginSection");
 const adminContent = document.getElementById("adminContent");
+const welcomeMsg = document.getElementById("welcomeMsg");
 
 const announcementInput = document.getElementById("announcementInput");
 const postAnnouncementBtn = document.getElementById("postAnnouncementBtn");
 
 const eventNameInput = document.getElementById("eventNameInput");
 const eventMultiplierInput = document.getElementById("eventMultiplierInput");
-const startEventBtn = document.getElementById("startEventBtn");
-const endEventBtn = document.getElementById("endEventBtn");
-
-const resetPlayerInput = document.getElementById("resetPlayerInput");
-const resetPlayerBtn = document.getElementById("resetPlayerBtn");
+const setEventBtn = document.getElementById("setEventBtn");
+const clearEventBtn = document.getElementById("clearEventBtn");
 
 const lbList = document.getElementById("leaderboardList");
 
-// Your admin email
-const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
-
-// --- AUTH ---
+// Google Login
 loginBtn.addEventListener("click", async () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
   try {
+    const provider = new firebase.auth.GoogleAuthProvider();
     await auth.signInWithPopup(provider);
   } catch (err) {
     alert("Login failed: " + err.message);
   }
 });
 
-// Auth state
+// Logout
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await auth.signOut();
+    alert("Logged out!");
+    location.reload(); // reload to show login screen again
+  } catch (err) {
+    alert("Logout failed: " + err.message);
+  }
+});
+
+// Auth state listener
 auth.onAuthStateChanged(user => {
-  if (user && user.email === ADMIN_EMAIL) {
-    loginCard.classList.add("hidden");
+  if (user && user.email === "aaravsahni1037@gmail.com") {
+    loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
+    welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}`;
     loadLeaderboard();
   } else {
+    loginSection.classList.remove("hidden");
     adminContent.classList.add("hidden");
-    loginCard.classList.remove("hidden");
   }
 });
 
-// --- ANNOUNCEMENTS ---
+// Post announcement
 postAnnouncementBtn.addEventListener("click", async () => {
   const msg = announcementInput.value.trim();
-  if (!msg) return alert("Enter a message!");
-  try {
-    await db.collection("announcements").add({
-      message: msg,
-      created: Date.now()
-    });
-    alert("Announcement posted!");
-    announcementInput.value = "";
-  } catch (err) {
-    alert("Failed: " + err.message);
-  }
+  if (!msg) return;
+  await db.collection("announcements").add({
+    message: msg,
+    created: Date.now()
+  });
+  alert("Announcement posted!");
+  announcementInput.value = "";
 });
 
-// --- EVENTS ---
-startEventBtn.addEventListener("click", async () => {
+// Set event
+setEventBtn.addEventListener("click", async () => {
   const name = eventNameInput.value.trim();
-  const mult = parseFloat(eventMultiplierInput.value) || 1;
-  try {
-    await db.collection("events").doc("current").set({
-      name,
-      multiplier: mult,
-      created: Date.now()
-    });
-    alert("Event started!");
-  } catch (err) {
-    alert("Failed: " + err.message);
-  }
+  const multiplier = parseFloat(eventMultiplierInput.value);
+  if (!name || !multiplier) return;
+  await db.collection("events").doc("current").set({
+    name,
+    multiplier,
+    created: Date.now()
+  });
+  alert("Event set!");
 });
 
-endEventBtn.addEventListener("click", async () => {
-  try {
-    await db.collection("events").doc("current").delete();
-    alert("Event ended!");
-  } catch (err) {
-    alert("Failed: " + err.message);
-  }
+// Clear event
+clearEventBtn.addEventListener("click", async () => {
+  await db.collection("events").doc("current").delete();
+  alert("Event cleared!");
 });
 
-// --- RESET PLAYER SCORE ---
-resetPlayerBtn.addEventListener("click", async () => {
-  const player = resetPlayerInput.value.trim();
-  if (!player) return alert("Enter a name!");
-  try {
-    await db.collection("leaderboard").doc(player).set({
-      score: 0,
-      updated: Date.now()
-    });
-    alert("Score reset for " + player);
-    resetPlayerInput.value = "";
-    loadLeaderboard();
-  } catch (err) {
-    alert("Failed: " + err.message);
-  }
-});
-
-// --- LEADERBOARD ---
+// Load leaderboard
 async function loadLeaderboard() {
   lbList.innerHTML = "";
-  try {
-    const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
-    snap.forEach(doc => {
-      const d = doc.data();
-      const li = document.createElement("li");
-      li.textContent = `${doc.id} — ${d.score}`;
-      lbList.appendChild(li);
-    });
-    if (lbList.children.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "No players yet.";
-      lbList.appendChild(li);
-    }
-  } catch (err) {
+  const snap = await db.collection("leaderboard").orderBy("score", "desc").limit(20).get();
+  snap.forEach(doc => {
+    const d = doc.data();
     const li = document.createElement("li");
-    li.textContent = "Error: " + err.message;
+    li.textContent = `${doc.id} — ${d.score}`;
     lbList.appendChild(li);
-  }
+  });
 }
