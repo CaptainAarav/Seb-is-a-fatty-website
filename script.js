@@ -60,7 +60,7 @@ let shopItems = {
   aaravGen:{ cost: 10000, bps: 1000, owned: 0, button: buyAaravBtn,   ownedEl: aaravOwnedDisplay   },
 };
 
-// Event State
+// ----- Event State -----
 let eventMultiplier = 1;
 let eventName = "";
 
@@ -107,15 +107,15 @@ function updateDisplay(){
   maybePushLeaderboard();
 }
 
-// RNG
+// RNG with 0.01% Aarav chance
 function pickWinner(){
-  const r = Math.floor(Math.random()*10000);
-  if (r < 8000) return "Sebastian Kavanagh";
-  if (r < 9000) return "Michael Winsor";
-  if (r < 9500) return "Ibrahim";
-  if (r < 9600) return "Bobby";
-  if (r < 9999) return "Peter";
-  return "Aarav Sahni";
+  const r = Math.floor(Math.random()*10000); // 0–9999
+  if (r < 8000) return "Sebastian Kavanagh"; // 80%
+  if (r < 9000) return "Michael Winsor";     // 10%
+  if (r < 9500) return "Ibrahim";            // 5%
+  if (r < 9600) return "Bobby";              // 1%
+  if (r < 9999) return "Peter";              // 3.99%
+  return "Aarav Sahni";                      // 0.01%
 }
 
 // Reveal button
@@ -127,6 +127,7 @@ button.addEventListener("click", ()=>{
   setTimeout(()=>{
     const winner = pickWinner();
     let earned = 0;
+
     if (winner==="Sebastian Kavanagh") earned = 1;
     else if (winner==="Michael Winsor") earned = 5;
     else if (["Ibrahim","Bobby","Peter"].includes(winner)) earned = 10;
@@ -180,7 +181,8 @@ for (const k in shopItems){
 setInterval(()=>{
   const inc = calcBPS();
   if (inc > 0){
-    bigbacks += Math.floor(inc * eventMultiplier);
+    const earned = Math.floor(inc * eventMultiplier);
+    bigbacks += earned;
     updateDisplay();
   }
 }, 1000);
@@ -212,7 +214,7 @@ saveNameBtn.addEventListener("click", ()=>{
   loadLeaderboard();
 });
 
-// Remove Me
+// Remove Me button
 async function deleteMyScore() {
   if (!db || !playerName) return;
   try {
@@ -236,7 +238,8 @@ async function maybePushLeaderboard(force=false){
   if (!force && (now - lastPushAt < 10000) && Math.abs(score - lastPushedScore) < 100) return;
   try{
     await db.collection("leaderboard").doc(playerName).set({
-      score, updated: now
+      score: score,
+      updated: now
     }, { merge: true });
     lastPushAt = now;
     lastPushedScore = score;
@@ -271,7 +274,24 @@ async function loadLeaderboard(){
   }
 }
 
-// ----- Reset Flag Check -----
+leaderboardBtn.addEventListener("click", ()=>{
+  refreshNameUI();
+  loadLeaderboard();
+  lbBackdrop.style.display = "flex";
+  void document.body.offsetWidth;
+  lbBackdrop.setAttribute("aria-hidden","false");
+});
+closeLeaderboardBtn.addEventListener("click", ()=>{
+  lbBackdrop.setAttribute("aria-hidden","true");
+  setTimeout(()=> lbBackdrop.style.display = "none", 250);
+});
+lbBackdrop.addEventListener("click", (e)=>{
+  if (e.target === lbBackdrop) closeLeaderboardBtn.click();
+});
+
+// ---------------------
+// RESET FLAG CHECK LOOP
+// ---------------------
 async function checkResetFlag() {
   if (!db || !playerName) return;
   try {
@@ -281,7 +301,7 @@ async function checkResetFlag() {
       localStorage.removeItem(STORAGE_KEY);
       bigbacks = 0;
 
-      // Reset shop
+      // Reset shop items
       shopItems.seb.cost = 20; shopItems.seb.owned = 0;
       shopItems.michael.cost = 50; shopItems.michael.owned = 0;
       shopItems.ibrahim.cost = 100; shopItems.ibrahim.owned = 0;
@@ -290,7 +310,7 @@ async function checkResetFlag() {
 
       updateDisplay();
 
-      // Clear flag
+      // Clear the reset flag
       await db.collection("leaderboard").doc(playerName).set({
         score: 0,
         updated: Date.now(),
@@ -332,4 +352,27 @@ async function loadEvent(){
       eventBanner.classList.remove("hidden");
     } else {
       eventMultiplier = 1;
-     
+      eventName = "";
+      eventBanner.classList.add("hidden");
+    }
+  } catch(e){
+    console.warn("Event load error:", e);
+  }
+}
+
+// ----- INIT -----
+loadState();
+updateDisplay();
+refreshNameUI();
+
+// Load banners
+loadAnnouncement();
+setInterval(loadAnnouncement, 60000);
+
+loadEvent();
+setInterval(loadEvent, 30000);
+
+// Check reset flag regularly
+setInterval(checkResetFlag, 10000); // every 10s
+
+console.log("Game initialized ✅");
