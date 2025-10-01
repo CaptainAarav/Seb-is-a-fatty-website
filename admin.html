@@ -34,9 +34,11 @@
 
       <h2>🏆 Leaderboard</h2>
       <ol id="leaderboardList" class="lb-list"></ol>
-      <div class="leaderboard-actions">
-        <button id="resetAllBtn" class="btn danger">Reset ALL Scores</button>
-      </div>
+
+      <h2>⚡ Reset Scores</h2>
+      <input id="resetPlayerInput" class="input" placeholder="Enter player name..." />
+      <button id="resetPlayerBtn" class="btn danger">Reset Player</button>
+      <button id="resetAllBtn" class="btn danger">Reset ALL Scores</button>
     </div>
   </div>
 
@@ -56,9 +58,8 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    window._db = db;
+    window.auth = firebase.auth();
+    window.db = firebase.firestore();
   </script>
 
   <script src="admin.js"></script>
