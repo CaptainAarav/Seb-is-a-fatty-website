@@ -47,7 +47,7 @@ const audios = {
 };
 
 // ----- Game State -----
-const STORAGE_KEY = "bb_state_v3";
+const STORAGE_KEY = "bb_state_v4";
 const NAME_KEY = "bb_player_name";
 let bigbacks = 0;
 
