@@ -1,9 +1,8 @@
-// ----- Firebase Refs -----
-const db = firebase.firestore();
+// Firebase Auth + Firestore
 const auth = firebase.auth();
-const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
+const db = firebase.firestore();
 
-// ----- DOM Refs -----
+// DOM references
 const loginBtn = document.getElementById("loginBtn");
 const loginCard = document.getElementById("loginCard");
 const adminContent = document.getElementById("adminContent");
@@ -21,125 +20,108 @@ const resetPlayerBtn = document.getElementById("resetPlayerBtn");
 
 const lbList = document.getElementById("leaderboardList");
 
-// ----- Login -----
-loginBtn.addEventListener("click", () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
+// Your admin email
+const ADMIN_EMAIL = "aaravsahni1037@gmail.com";
 
-  if (/Mobi|Android/i.test(navigator.userAgent)) {
-    // Use redirect on mobile
-    auth.signInWithRedirect(provider);
-  } else {
-    // Use popup on desktop
-    auth.signInWithPopup(provider).catch(e => {
-      alert("Login failed: " + e.message);
-    });
+// --- AUTH ---
+loginBtn.addEventListener("click", async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await auth.signInWithPopup(provider);
+  } catch (err) {
+    alert("Login failed: " + err.message);
   }
 });
 
-// Handle redirect result (mobile)
-auth.getRedirectResult().then(result => {
-  if (result.user && result.user.email === ADMIN_EMAIL) {
-    loginCard.classList.add("hidden");
-    adminContent.classList.remove("hidden");
-    loadLeaderboard();
-  }
-}).catch(e => console.error("Redirect login error:", e));
-
-// Handle auth state changes
+// Auth state
 auth.onAuthStateChanged(user => {
   if (user && user.email === ADMIN_EMAIL) {
     loginCard.classList.add("hidden");
     adminContent.classList.remove("hidden");
     loadLeaderboard();
+  } else {
+    adminContent.classList.add("hidden");
+    loginCard.classList.remove("hidden");
   }
 });
 
-// ----- Announcements -----
-if (postAnnouncementBtn) {
-  postAnnouncementBtn.addEventListener("click", async () => {
-    const msg = announcementInput.value.trim();
-    if (!msg) return alert("Please enter a message.");
-    try {
-      await db.collection("announcements").add({
-        message: msg,
-        created: Date.now()
-      });
-      alert("✅ Announcement posted!");
-      announcementInput.value = "";
-    } catch (e) {
-      console.error(e);
-      alert("Error posting announcement.");
-    }
-  });
-}
+// --- ANNOUNCEMENTS ---
+postAnnouncementBtn.addEventListener("click", async () => {
+  const msg = announcementInput.value.trim();
+  if (!msg) return alert("Enter a message!");
+  try {
+    await db.collection("announcements").add({
+      message: msg,
+      created: Date.now()
+    });
+    alert("Announcement posted!");
+    announcementInput.value = "";
+  } catch (err) {
+    alert("Failed: " + err.message);
+  }
+});
 
-// ----- Events -----
-if (startEventBtn) {
-  startEventBtn.addEventListener("click", async () => {
-    const name = eventNameInput.value.trim() || "Special Event";
-    const multiplier = parseFloat(eventMultiplierInput.value) || 1;
-    try {
-      await db.collection("events").doc("current").set({
-        name,
-        multiplier,
-        created: Date.now()
-      });
-      alert(`✅ Event "${name}" started (${multiplier}x)`);
-    } catch (e) {
-      console.error(e);
-      alert("Error starting event.");
-    }
-  });
-}
+// --- EVENTS ---
+startEventBtn.addEventListener("click", async () => {
+  const name = eventNameInput.value.trim();
+  const mult = parseFloat(eventMultiplierInput.value) || 1;
+  try {
+    await db.collection("events").doc("current").set({
+      name,
+      multiplier: mult,
+      created: Date.now()
+    });
+    alert("Event started!");
+  } catch (err) {
+    alert("Failed: " + err.message);
+  }
+});
 
-if (endEventBtn) {
-  endEventBtn.addEventListener("click", async () => {
-    try {
-      await db.collection("events").doc("current").delete();
-      alert("✅ Event ended.");
-    } catch (e) {
-      console.error(e);
-      alert("Error ending event.");
-    }
-  });
-}
+endEventBtn.addEventListener("click", async () => {
+  try {
+    await db.collection("events").doc("current").delete();
+    alert("Event ended!");
+  } catch (err) {
+    alert("Failed: " + err.message);
+  }
+});
 
-// ----- Reset Player -----
-if (resetPlayerBtn) {
-  resetPlayerBtn.addEventListener("click", async () => {
-    const name = (resetPlayerInput.value || "").trim();
-    if (!name) return alert("Enter a player name.");
-    try {
-      await db.collection("leaderboard").doc(name).set({
-        score: 0,
-        updated: Date.now()
-      }, { merge: true });
-      alert(`✅ Reset ${name}'s score to 0`);
-      resetPlayerInput.value = "";
-      loadLeaderboard();
-    } catch (e) {
-      console.error(e);
-      alert("Error resetting score.");
-    }
-  });
-}
+// --- RESET PLAYER SCORE ---
+resetPlayerBtn.addEventListener("click", async () => {
+  const player = resetPlayerInput.value.trim();
+  if (!player) return alert("Enter a name!");
+  try {
+    await db.collection("leaderboard").doc(player).set({
+      score: 0,
+      updated: Date.now()
+    });
+    alert("Score reset for " + player);
+    resetPlayerInput.value = "";
+    loadLeaderboard();
+  } catch (err) {
+    alert("Failed: " + err.message);
+  }
+});
 
-// ----- Leaderboard -----
+// --- LEADERBOARD ---
 async function loadLeaderboard() {
   lbList.innerHTML = "";
   try {
-    const snap = await db.collection("leaderboard")
-      .orderBy("score", "desc")
-      .limit(20)
-      .get();
+    const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
     snap.forEach(doc => {
       const d = doc.data();
       const li = document.createElement("li");
       li.textContent = `${doc.id} — ${d.score}`;
       lbList.appendChild(li);
     });
-  } catch (e) {
-    console.error(e);
-    lbList.innerHTML = "<li>Error loading leaderboard.</li>";
+    if (lbList.children.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "No players yet.";
+      lbList.appendChild(li);
+    }
+  } catch (err) {
+    const li = document.createElement("li");
+    li.textContent = "Error: " + err.message;
+    lbList.appendChild(li);
   }
 }
