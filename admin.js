@@ -19,21 +19,25 @@ const resetPlayerInput = document.getElementById("resetPlayerInput");
 const resetPlayerBtn = document.getElementById("resetPlayerBtn");
 const resetAllBtn = document.getElementById("resetAllBtn");
 
+// Ensure Firebase is available
+const auth = window.auth;
+const db = window.db;
+
 // ----- Login -----
 loginBtn.addEventListener("click", async () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
-    await window.auth.signInWithPopup(provider);
+    await auth.signInWithPopup(provider);
   } catch (err) {
     console.warn("Popup login failed, trying redirect:", err.message);
-    await window.auth.signInWithRedirect(provider);
+    await auth.signInWithRedirect(provider);
   }
 });
 
 // ----- Logout -----
 logoutBtn.addEventListener("click", async () => {
   try {
-    await window.auth.signOut();
+    await auth.signOut();
     alert("Logged out!");
     location.reload();
   } catch (err) {
@@ -42,7 +46,7 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 // ----- Auth State -----
-window.auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(user => {
   if (user && user.email === "aaravsahni1037@gmail.com") {
     loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
@@ -59,7 +63,7 @@ postAnnouncementBtn.addEventListener("click", async () => {
   const msg = announcementInput.value.trim();
   if (!msg) return;
   try {
-    await window.db.collection("announcements").add({
+    await db.collection("announcements").add({
       message: msg,
       created: Date.now()
     });
@@ -76,7 +80,7 @@ setEventBtn.addEventListener("click", async () => {
   const multiplier = parseFloat(eventMultiplierInput.value);
   if (!name || isNaN(multiplier)) return;
   try {
-    await window.db.collection("events").doc("current").set({
+    await db.collection("events").doc("current").set({
       name,
       multiplier,
       created: Date.now()
@@ -90,7 +94,7 @@ setEventBtn.addEventListener("click", async () => {
 // ----- Clear Event -----
 clearEventBtn.addEventListener("click", async () => {
   try {
-    await window.db.collection("events").doc("current").delete();
+    await db.collection("events").doc("current").delete();
     alert("Event cleared!");
   } catch (err) {
     alert("Failed to clear event: " + err.message);
@@ -101,10 +105,17 @@ clearEventBtn.addEventListener("click", async () => {
 async function loadLeaderboard() {
   lbList.innerHTML = "";
   try {
-    const snap = await window.db.collection("leaderboard")
+    const snap = await db.collection("leaderboard")
       .orderBy("score", "desc")
       .limit(20)
       .get();
+
+    if (snap.empty) {
+      const li = document.createElement("li");
+      li.textContent = "No players yet.";
+      lbList.appendChild(li);
+      return;
+    }
 
     snap.forEach(doc => {
       const d = doc.data();
@@ -113,15 +124,10 @@ async function loadLeaderboard() {
       lbList.appendChild(li);
     });
 
-    if (lbList.children.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "No players yet.";
-      lbList.appendChild(li);
-    }
   } catch (err) {
     console.error("Leaderboard load error:", err);
     const li = document.createElement("li");
-    li.textContent = "Error loading leaderboard.";
+    li.textContent = "Error loading leaderboard: " + err.message;
     lbList.appendChild(li);
   }
 }
@@ -129,12 +135,12 @@ async function loadLeaderboard() {
 // ----- Reset Scores -----
 resetPlayerBtn.addEventListener("click", async () => {
   const player = resetPlayerInput.value.trim();
-  if (!player) return;
+  if (!player) return alert("Enter a player name!");
   try {
-    await window.db.collection("leaderboard").doc(player).set({
+    await db.collection("leaderboard").doc(player).set({
       score: 0,
       updated: Date.now()
-    });
+    }, { merge: true });
     alert(`Reset ${player}'s score to 0!`);
     loadLeaderboard();
   } catch (err) {
@@ -145,10 +151,10 @@ resetPlayerBtn.addEventListener("click", async () => {
 resetAllBtn.addEventListener("click", async () => {
   if (!confirm("Are you sure you want to reset ALL scores?")) return;
   try {
-    const snap = await window.db.collection("leaderboard").get();
-    const batch = window.db.batch();
+    const snap = await db.collection("leaderboard").get();
+    const batch = db.batch();
     snap.forEach(doc => {
-      batch.set(doc.ref, { score: 0, updated: Date.now() });
+      batch.update(doc.ref, { score: 0, updated: Date.now() });
     });
     await batch.commit();
     alert("All scores reset!");
