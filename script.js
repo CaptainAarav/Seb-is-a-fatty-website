@@ -146,7 +146,7 @@ button.addEventListener("click", ()=>{
   }, 2500);
 });
 
-// Shop
+// Shop open/close
 shopBtn.addEventListener("click", ()=>{
   shopBackdrop.style.display = "flex";
   void document.body.offsetWidth;
@@ -167,6 +167,7 @@ function showError(msg="Not enough Bigbacks!"){
   showError._t = setTimeout(()=> errorMsg.classList.remove("show"), 2000);
 }
 
+// Shop purchases
 for (const k in shopItems){
   const it = shopItems[k];
   it.button.addEventListener("click", ()=>{
@@ -178,6 +179,7 @@ for (const k in shopItems){
   });
 }
 
+// Passive BPS
 setInterval(()=>{
   const inc = calcBPS();
   if (inc > 0){
