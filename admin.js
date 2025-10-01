@@ -15,14 +15,15 @@ const clearEventBtn = document.getElementById("clearEventBtn");
 
 const lbList = document.getElementById("leaderboardList");
 
-// Firestore reference
+// Firebase handles (from admin.html)
 const db = window._db;
+const auth = window.auth;
 
 // ----- Login -----
 loginBtn.addEventListener("click", async () => {
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
-    await firebase.auth().signInWithPopup(provider);
+    await auth.signInWithPopup(provider);
   } catch (err) {
     alert("Login failed: " + err.message);
   }
@@ -31,7 +32,7 @@ loginBtn.addEventListener("click", async () => {
 // ----- Logout -----
 logoutBtn.addEventListener("click", async () => {
   try {
-    await firebase.auth().signOut();
+    await auth.signOut();
     alert("Logged out!");
     location.reload();
   } catch (err) {
@@ -40,7 +41,7 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 // ----- Auth State -----
-firebase.auth().onAuthStateChanged(user => {
+auth.onAuthStateChanged(user => {
   if (user && user.email === "aaravsahni1037@gmail.com") {
     loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
