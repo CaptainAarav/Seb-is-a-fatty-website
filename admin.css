@@ -1,38 +1,81 @@
+/* Global styles */
 body {
-  font-family: sans-serif;
-  margin: 20px;
-  background: #f9f9f9;
-  color: #222;
+  font-family: "Monocraft", monospace, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #e8f2ec; /* light sage green */
+  color: #2a3c34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
+/* Header */
 h1 {
+  margin-top: 30px;
+  font-size: 2rem;
   color: #2a5d3d;
+  text-align: center;
 }
 
+/* Section cards */
 section {
-  margin: 20px 0;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: white;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 500px;
 }
 
+/* Section titles */
+section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: #1f4630;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: 1px solid #cfd9d4;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* Buttons */
 button {
+  padding: 10px 15px;
   margin-top: 10px;
-  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
   background: #2a5d3d;
   color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-button:hover {
-  background: #3c7a53;
+  transition: transform 0.15s, background 0.2s;
+  font-family: inherit;
 }
 
-input {
-  padding: 6px;
-  margin: 5px 0;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+/* Button hover animation */
+button:hover {
+  background: #3c7a53;
+  transform: scale(1.05);
+}
+
+/* Login box */
+#loginBox {
+  margin-top: 60px;
+}
+
+#adminInfo {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: center;
 }
