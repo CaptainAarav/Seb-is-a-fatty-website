@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Biggest Fatty</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Preload font -->
+  <link rel="preload" href="Monocraft-nerd-fonts-patched.ttc" as="font" type="font/ttc" crossorigin />
+</head>
+<body>
+  <div class="wrap">
+    <!-- HUD -->
+    <section id="hud" class="card hud">
+      <div class="stat">
+        <div class="stat-label">Bigbacks</div>
+        <div id="score" class="stat-value">0</div>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <div class="stat-label">Bigbacks / sec</div>
+        <div id="bps" class="stat-value">0</div>
+      </div>
+    </section>
+
+    <!-- Main CTA -->
+    <button id="revealBtn" class="cta">
+      Who is the biggest fatty in the world?
+    </button>
+
+    <div id="result" class="result">Sebastian Kavanagh</div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button id="shopBtn" class="btn shop-btn">
+        <span class="shop-dot"></span>
+        Shop
+      </button>
+      <button id="leaderboardBtn" class="btn shop-btn">
+        <span class="shop-dot"></span>
+        Leaderboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Shop Modal -->
+  <div id="shop" class="shop-backdrop" aria-hidden="true">
+    <div class="shop-modal card">
+      <div class="shop-header">
+        <h2>Shop</h2>
+        <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div class="shop-grid">
+        <div class="shop-item card soft">
+          <div class="shop-title">Seb Generator</div>
+          <div class="shop-sub">+1 BPS</div>
+          <div class="shop-row">
+            <button id="buySebBtn" class="btn buy-btn">Buy (Cost: 20)</button>
+            <div id="sebOwned" class="owned">Owned: 0</div>
+          </div>
+        </div>
+
+        <div class="shop-item card soft">
+          <div class="shop-title">Michael Generator</div>
+          <div class="shop-sub">+5 BPS</div>
+          <div class="shop-row">
+            <button id="buyMichaelBtn" class="btn buy-btn">Buy (Cost: 50)</button>
+            <div id="michaelOwned" class="owned">Owned: 0</div>
+          </div>
+        </div>
+
+        <div class="shop-item card soft">
+          <div class="shop-title">Ibrahim Generator</div>
+          <div class="shop-sub">+10 BPS</div>
+          <div class="shop-row">
+            <button id="buyIbrahimBtn" class="btn buy-btn">Buy (Cost: 100)</button>
+            <div id="ibrahimOwned" class="owned">Owned: 0</div>
+          </div>
+        </div>
+
+        <div class="shop-item card soft">
+          <div class="shop-title">Bobby Generator</div>
+          <div class="shop-sub">+10 BPS</div>
+          <div class="shop-row">
+            <button id="buyBobbyBtn" class="btn buy-btn">Buy (Cost: 500)</button>
+            <div id="bobbyOwned" class="owned">Owned: 0</div>
+          </div>
+        </div>
+
+        <div class="shop-item card soft">
+          <div class="shop-title">Aarav Super Mythic Generator</div>
+          <div class="shop-sub">+1000 BPS</div>
+          <div class="shop-row">
+            <button id="buyAaravBtn" class="btn buy-btn">Buy (Cost: 10000)</button>
+            <div id="aaravOwned" class="owned">Owned: 0</div>
+          </div>
+        </div>
+      </div>
+
+      <p id="errorMsg" aria-live="polite">Not enough Bigbacks!</p>
+      <p class="shop-hint">Costs increase by <strong>20%</strong> each purchase.</p>
+    </div>
+  </div>
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardBackdrop" class="lb-backdrop" aria-hidden="true">
+    <div class="lb-modal card">
+      <div class="shop-header">
+        <h2>Leaderboard</h2>
+        <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div id="nameRow" class="name-row">
+        <input id="playerNameInput" class="input" type="text" maxlength="24" placeholder="Enter your name"/>
+        <button id="saveNameBtn" class="btn">Save Name</button>
+      </div>
+
+      <div id="youAre" class="you-are hidden"></div>
+
+      <ol id="leaderboardList" class="lb-list"></ol>
+      <p id="leaderboardHint" class="shop-hint">
+        Leaderboard updates every ~10s or when your score changes.
+      </p>
+    </div>
+  </div>
+
+  <!-- Credits -->
+  <div id="credits">
+    <p>Made By Aarav The Person Who Isn't A Bigback</p>
+    <p>Harvey is my favourite meth addict</p>
+  </div>
+
+  <!-- Audio -->
+  <audio id="drumroll" src="drumroll.mp3" preload="auto"></audio>
+  <audio id="sebastianAudio" src="sebastian.mp3" preload="auto"></audio>
+  <audio id="michaelAudio" src="michael.mp3" preload="auto"></audio>
+  <audio id="ibrahimAudio" src="ibrahim.mp3" preload="auto"></audio>
+  <audio id="bobbyAudio" src="bobby.mp3" preload="auto"></audio>
+  <audio id="peterAudio" src="peter.mp3" preload="auto"></audio>
+  <audio id="aaravAudio" src="aarav.mp3" preload="auto"></audio>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
+      authDomain: "sebisafatty.firebaseapp.com",
+      projectId: "sebisafatty",
+      storageBucket: "sebisafatty.firebasestorage.app",
+      messagingSenderId: "651122471293",
+      appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
+      measurementId: "G-KYW4WDBXH1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    window._db = firebase.firestore();
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
