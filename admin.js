@@ -12,6 +12,11 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     document.getElementById("adminInfo").textContent = `Logged in as ${user.email}`;
+
+    // Load leaderboard immediately
+    loadAdminLeaderboard();
+    // Auto-refresh every 10s
+    setInterval(loadAdminLeaderboard, 10000);
   } catch (e) {
     alert("Login failed: " + e.message);
   }
@@ -35,6 +40,7 @@ document.getElementById("resetLeaderboardBtn").addEventListener("click", async (
   snap.forEach(doc => batch.delete(doc.ref));
   await batch.commit();
   alert("✅ Leaderboard reset!");
+  loadAdminLeaderboard();
 });
 
 // Reset Player Score
@@ -43,6 +49,7 @@ document.getElementById("resetPlayerBtn").addEventListener("click", async () => 
   if (!name) return;
   await db.collection("leaderboard").doc(name).set({ score: 0, updated: Date.now() });
   alert(`✅ Reset ${name}'s score to 0`);
+  loadAdminLeaderboard();
 });
 
 // Post Event
@@ -55,3 +62,27 @@ document.getElementById("postEventBtn").addEventListener("click", async () => {
   });
   alert(`✅ Event '${name}' set with multiplier ${multiplier}`);
 });
+
+// Load Leaderboard
+async function loadAdminLeaderboard() {
+  const ul = document.getElementById("adminLeaderboard");
+  ul.innerHTML = "";
+  try {
+    const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
+    snap.forEach((doc, index) => {
+      const d = doc.data();
+      const li = document.createElement("li");
+      li.textContent = `${index+1}. ${doc.id} — ${d.score}`;
+      ul.appendChild(li);
+    });
+    if (ul.children.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "No entries yet.";
+      ul.appendChild(li);
+    }
+  } catch(e) {
+    const li = document.createElement("li");
+    li.textContent = "Error loading leaderboard.";
+    ul.appendChild(li);
+  }
+}
