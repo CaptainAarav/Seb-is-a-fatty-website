@@ -210,6 +210,28 @@ body{
   display: none;
 }
 
+/* Event Banner */
+.event {
+  width: 100%;
+  padding: 12px;
+  background: #2a5d3d;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  position: sticky;
+  top: 40px; /* just under announcements */
+  z-index: 99;
+  animation: pulse 2s infinite;
+}
+.event.hidden {
+  display: none;
+}
+
+@keyframes pulse {
+  0%,100% { background:#2a5d3d; }
+  50% { background:#3e8c5c; }
+}
+
 /* Footer */
 .footer {
   background: #000;
