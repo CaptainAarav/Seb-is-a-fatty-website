@@ -3,36 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biggest Fatty — Admin Panel</title>
+  <title>Admin Panel — Biggest Fatty</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <div class="wrap">
-    <h1>⚙️ Admin Panel</h1>
-    <p class="subtitle">Manage announcements, events, and leaderboard</p>
-
     <!-- Login -->
-    <div id="loginCard" class="card">
-      <h2>Login</h2>
-      <button id="loginBtn" class="btn">Sign in with Google</button>
+    <div id="loginCard" class="card soft">
+      <h1>Admin Login</h1>
+      <p>Sign in with Google to manage the game.</p>
+      <button id="loginBtn" class="btn">Login with Google</button>
     </div>
 
+    <!-- Admin Content -->
     <div id="adminContent" class="hidden">
+      <h1 class="title">Admin Panel</h1>
 
-      <!-- Announcements -->
+      <!-- Announcement -->
       <div class="card soft">
-        <h2>Announcements</h2>
-        <input id="announcementInput" class="input" placeholder="Enter announcement" />
+        <h2>Post Announcement</h2>
+        <textarea id="announcementInput" class="input" placeholder="Enter announcement message"></textarea>
         <button id="postAnnouncementBtn" class="btn">Post Announcement</button>
       </div>
 
-      <!-- Events -->
+      <!-- Event -->
       <div class="card soft">
-        <h2>Events</h2>
-        <input id="eventNameInput" class="input" placeholder="Event name" />
-        <input id="eventMultiplierInput" class="input" type="number" step="0.1" placeholder="Multiplier (e.g. 2)" />
-        <button id="setEventBtn" class="btn">Set Event</button>
-        <button id="clearEventBtn" class="btn danger">Clear Event</button>
+        <h2>Manage Event</h2>
+        <input id="eventNameInput" class="input" placeholder="Event name">
+        <input id="eventMultiplierInput" class="input" type="number" min="1" value="2">
+        <button id="startEventBtn" class="btn">Start Event</button>
+        <button id="endEventBtn" class="btn danger">End Event</button>
+      </div>
+
+      <!-- Reset Score -->
+      <div class="card soft">
+        <h2>Reset Player Score</h2>
+        <p>Enter a player’s exact name to reset their score to 0.</p>
+        <input id="resetPlayerInput" class="input" placeholder="Player name" />
+        <button id="resetPlayerBtn" class="btn">Reset Score</button>
       </div>
 
       <!-- Leaderboard -->
@@ -40,15 +48,6 @@
         <h2>Leaderboard</h2>
         <ol id="leaderboardList" class="lb-list"></ol>
       </div>
-
-      <!-- Reset Player Score -->
-      <div class="card soft">
-        <h2>Reset Player Score</h2>
-        <p>Enter a player’s exact name to reset their score to 0.</p>
-        <input id="resetPlayerInput" class="input" placeholder="Player name" />
-        <button id="resetPlayerBtn" class="btn danger">Reset Score</button>
-      </div>
-
     </div>
   </div>
 
@@ -67,9 +66,10 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
-    window._auth = firebase.auth();
     window._db = firebase.firestore();
+    window._auth = firebase.auth();
   </script>
+
   <script src="admin.js"></script>
 </body>
 </html>
