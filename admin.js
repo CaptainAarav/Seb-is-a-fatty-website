@@ -14,16 +14,15 @@ const setEventBtn = document.getElementById("setEventBtn");
 const clearEventBtn = document.getElementById("clearEventBtn");
 
 const lbList = document.getElementById("leaderboardList");
+const resetAllBtn = document.getElementById("resetAllBtn");
 
-// Firebase handles (from admin.html)
 const db = window._db;
-const auth = window.auth;
 
 // ----- Login -----
 loginBtn.addEventListener("click", async () => {
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider);
+    await firebase.auth().signInWithPopup(provider);
   } catch (err) {
     alert("Login failed: " + err.message);
   }
@@ -32,7 +31,7 @@ loginBtn.addEventListener("click", async () => {
 // ----- Logout -----
 logoutBtn.addEventListener("click", async () => {
   try {
-    await auth.signOut();
+    await firebase.auth().signOut();
     alert("Logged out!");
     location.reload();
   } catch (err) {
@@ -41,7 +40,7 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 // ----- Auth State -----
-auth.onAuthStateChanged(user => {
+firebase.auth().onAuthStateChanged(user => {
   if (user && user.email === "aaravsahni1037@gmail.com") {
     loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
@@ -96,6 +95,41 @@ clearEventBtn.addEventListener("click", async () => {
   }
 });
 
+// ----- Reset Individual Player -----
+async function resetPlayerScore(playerName) {
+  if (!confirm(`Reset score for ${playerName}?`)) return;
+  try {
+    await db.collection("leaderboard").doc(playerName).set({
+      score: 0,
+      updated: Date.now()
+    });
+    alert(`${playerName}'s score has been reset!`);
+    loadLeaderboard();
+  } catch (err) {
+    alert("Failed to reset score: " + err.message);
+  }
+}
+
+// ----- Reset ALL Players -----
+resetAllBtn.addEventListener("click", async () => {
+  if (!confirm("⚠️ This will reset ALL players' scores to 0. Continue?")) return;
+  try {
+    const snap = await db.collection("leaderboard").get();
+    const batch = db.batch();
+    snap.forEach(doc => {
+      batch.set(doc.ref, {
+        score: 0,
+        updated: Date.now()
+      });
+    });
+    await batch.commit();
+    alert("All scores have been reset!");
+    loadLeaderboard();
+  } catch (err) {
+    alert("Failed to reset all scores: " + err.message);
+  }
+});
+
 // ----- Load Leaderboard -----
 async function loadLeaderboard() {
   lbList.innerHTML = "";
@@ -108,7 +142,10 @@ async function loadLeaderboard() {
     snap.forEach(doc => {
       const d = doc.data();
       const li = document.createElement("li");
-      li.textContent = `${doc.id} — ${d.score}`;
+      li.innerHTML = `
+        ${doc.id} — ${d.score}
+        <button class="btn danger btn-small" onclick="resetPlayerScore('${doc.id}')">Reset</button>
+      `;
       lbList.appendChild(li);
     });
 
