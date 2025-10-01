@@ -53,8 +53,10 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+
+    // Expose globally so admin.js can use them
+    window.auth = firebase.auth();
+    window._db = firebase.firestore();
   </script>
 
   <script src="admin.js"></script>
