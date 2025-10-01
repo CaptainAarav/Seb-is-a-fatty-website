@@ -223,4 +223,116 @@ async function deleteMyScore() {
     localStorage.removeItem(NAME_KEY);
     refreshNameUI();
     loadLeaderboard();
-  } catch(e
+  } catch(e) {
+    console.error("Failed to delete score:", e);
+  }
+}
+if (deleteNameBtn) {
+  deleteNameBtn.addEventListener("click", deleteMyScore);
+}
+
+async function maybePushLeaderboard(force=false){
+  if (!db || !playerName) return;
+  const now = Date.now();
+  const score = Math.floor(bigbacks);
+  if (!force && (now - lastPushAt < 10000) && Math.abs(score - lastPushedScore) < 100) return;
+  try{
+    await db.collection("leaderboard").doc(playerName).set({
+      score: score,
+      updated: now
+    });
+    lastPushAt = now;
+    lastPushedScore = score;
+  }catch(e){ console.warn("Failed to update leaderboard:", e); }
+}
+
+async function loadLeaderboard(){
+  lbList.innerHTML = "";
+  if (!db){
+    const li = document.createElement("li");
+    li.textContent = "Leaderboard not connected.";
+    lbList.appendChild(li);
+    return;
+  }
+  try{
+    const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const li = document.createElement("li");
+      li.textContent = `${doc.id} — ${d.score}`;
+      lbList.appendChild(li);
+    });
+    if (lbList.children.length === 0){
+      const li = document.createElement("li");
+      li.textContent = "No entries yet.";
+      lbList.appendChild(li);
+    }
+  }catch(e){
+    const li = document.createElement("li");
+    li.textContent = "Error loading leaderboard.";
+    lbList.appendChild(li);
+  }
+}
+
+leaderboardBtn.addEventListener("click", ()=>{
+  refreshNameUI();
+  loadLeaderboard();
+  lbBackdrop.style.display = "flex";
+  void document.body.offsetWidth;
+  lbBackdrop.setAttribute("aria-hidden","false");
+});
+closeLeaderboardBtn.addEventListener("click", ()=>{
+  lbBackdrop.setAttribute("aria-hidden","true");
+  setTimeout(()=> lbBackdrop.style.display = "none", 250);
+});
+lbBackdrop.addEventListener("click", (e)=>{
+  if (e.target === lbBackdrop) closeLeaderboardBtn.click();
+});
+
+// ----- Announcements -----
+async function loadAnnouncement(){
+  if (!db || !banner) return;
+  try {
+    const snap = await db.collection("announcements").orderBy("created","desc").limit(1).get();
+    if (!snap.empty){
+      const msg = snap.docs[0].data().message;
+      banner.textContent = "📢 " + msg;
+      banner.classList.remove("hidden");
+    } else {
+      banner.classList.add("hidden");
+    }
+  } catch(e){
+    console.warn("Announcement load error:", e);
+  }
+}
+
+// ----- Events -----
+async function loadEvent(){
+  if (!db || !eventBanner) return;
+  try {
+    const doc = await db.collection("events").doc("current").get();
+    if (doc.exists){
+      const d = doc.data();
+      eventMultiplier = d.multiplier || 1;
+      eventName = d.name || "";
+      eventBanner.textContent = `🎉 ${eventName} — ${eventMultiplier}x Bigbacks!`;
+      eventBanner.classList.remove("hidden");
+    } else {
+      eventMultiplier = 1;
+      eventName = "";
+      eventBanner.classList.add("hidden");
+    }
+  } catch(e){
+    console.warn("Event load error:", e);
+  }
+}
+
+// Init
+loadState();
+updateDisplay();
+refreshNameUI();
+loadAnnouncement();
+setInterval(loadAnnouncement, 60000);
+
+loadEvent();
+setInterval(loadEvent, 30000);
