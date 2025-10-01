@@ -35,9 +35,9 @@
       <h2>🏆 Leaderboard</h2>
       <ol id="leaderboardList" class="lb-list"></ol>
 
-      <h2>⚡ Reset Scores</h2>
+      <h2>🔧 Reset Scores</h2>
       <input id="resetPlayerInput" class="input" placeholder="Enter player name..." />
-      <button id="resetPlayerBtn" class="btn danger">Reset Player</button>
+      <button id="resetPlayerBtn" class="btn danger">Reset Player Score</button>
       <button id="resetAllBtn" class="btn danger">Reset ALL Scores</button>
     </div>
   </div>
@@ -47,6 +47,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
 
+  <!-- Firebase Init -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
@@ -57,11 +58,15 @@
       appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
       measurementId: "G-KYW4WDBXH1"
     };
+
     firebase.initializeApp(firebaseConfig);
+
+    // 🔹 Make them GLOBAL so admin.js can access
     window.auth = firebase.auth();
     window.db = firebase.firestore();
   </script>
 
+  <!-- Admin Logic -->
   <script src="admin.js"></script>
 </body>
 </html>
