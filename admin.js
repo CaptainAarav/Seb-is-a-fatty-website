@@ -8,14 +8,11 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     const result = await auth.signInWithPopup(provider);
     const user = result.user;
 
-    // Show admin panel
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     document.getElementById("adminInfo").textContent = `Logged in as ${user.email}`;
 
-    // Load leaderboard immediately
     loadAdminLeaderboard();
-    // Auto-refresh every 10s
     setInterval(loadAdminLeaderboard, 10000);
   } catch (e) {
     alert("Login failed: " + e.message);
@@ -52,37 +49,57 @@ document.getElementById("resetPlayerBtn").addEventListener("click", async () => 
   loadAdminLeaderboard();
 });
 
-// Post Event
+// Post Event + Preview
 document.getElementById("postEventBtn").addEventListener("click", async () => {
   const name = document.getElementById("eventNameInput").value.trim();
   const multiplier = parseInt(document.getElementById("eventMultiplierInput").value, 10);
   if (!name || isNaN(multiplier)) return;
+
   await db.collection("events").doc("current").set({
     name, multiplier, created: Date.now()
   });
+
+  const preview = document.getElementById("eventPreview");
+  const previewText = document.getElementById("eventPreviewText");
+  previewText.textContent = `${name} — ${multiplier}x Bigbacks!`;
+  preview.classList.remove("hidden");
+
   alert(`✅ Event '${name}' set with multiplier ${multiplier}`);
 });
 
-// Load Leaderboard
+// Load Leaderboard (safe sorting)
 async function loadAdminLeaderboard() {
   const ul = document.getElementById("adminLeaderboard");
   ul.innerHTML = "";
   try {
-    const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
-    snap.forEach((doc, index) => {
+    const snap = await db.collection("leaderboard").get();
+    const docs = [];
+
+    snap.forEach(doc => {
       const d = doc.data();
+      if (typeof d.score === "number") {
+        docs.push({ id: doc.id, score: d.score });
+      }
+    });
+
+    // Sort by score descending
+    docs.sort((a, b) => b.score - a.score);
+
+    docs.slice(0, 20).forEach((d, index) => {
       const li = document.createElement("li");
-      li.textContent = `${index+1}. ${doc.id} — ${d.score}`;
+      li.textContent = `${index + 1}. ${d.id} — ${d.score}`;
       ul.appendChild(li);
     });
-    if (ul.children.length === 0) {
+
+    if (docs.length === 0) {
       const li = document.createElement("li");
       li.textContent = "No entries yet.";
       ul.appendChild(li);
     }
-  } catch(e) {
+  } catch (e) {
     const li = document.createElement("li");
     li.textContent = "Error loading leaderboard.";
     ul.appendChild(li);
+    console.error("Admin leaderboard error:", e);
   }
 }
