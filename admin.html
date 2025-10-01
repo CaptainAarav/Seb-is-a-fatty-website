@@ -11,7 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
 
   <script>
-    // ✅ Your real Firebase config
+    // ✅ Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
       authDomain: "sebisafatty.firebaseapp.com",
@@ -22,7 +22,6 @@
       measurementId: "G-KYW4WDBXH1"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     window._db = firebase.firestore();
     window._auth = firebase.auth();
@@ -47,7 +46,7 @@
       <button id="postAnnouncementBtn">Post</button>
     </section>
 
-    <!-- Leaderboard -->
+    <!-- Leaderboard controls -->
     <section>
       <h2>Leaderboard Controls</h2>
       <button id="resetLeaderboardBtn">Reset Entire Leaderboard</button>
@@ -61,6 +60,14 @@
       <input id="eventNameInput" type="text" placeholder="Event name">
       <input id="eventMultiplierInput" type="number" placeholder="Multiplier (e.g. 2)">
       <button id="postEventBtn">Set Event</button>
+    </section>
+
+    <!-- Live Leaderboard -->
+    <section>
+      <h2>Current Leaderboard</h2>
+      <ul id="adminLeaderboard">
+        <li>Loading...</li>
+      </ul>
     </section>
   </div>
 
