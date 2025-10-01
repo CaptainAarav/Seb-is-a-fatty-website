@@ -34,6 +34,9 @@
 
       <h2>🏆 Leaderboard</h2>
       <ol id="leaderboardList" class="lb-list"></ol>
+      <div class="leaderboard-actions">
+        <button id="resetAllBtn" class="btn danger">Reset ALL Scores</button>
+      </div>
     </div>
   </div>
 
@@ -53,10 +56,9 @@
       measurementId: "G-KYW4WDBXH1"
     };
     firebase.initializeApp(firebaseConfig);
-
-    // Expose globally so admin.js can use them
-    window.auth = firebase.auth();
-    window._db = firebase.firestore();
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    window._db = db;
   </script>
 
   <script src="admin.js"></script>
