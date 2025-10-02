@@ -231,11 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function deleteMyScore() {
     if (!db || !playerName) return;
     try {
-      await db.collection("leaderboard").doc(playerName).set({
-        score: 0,
-        deleted: true,
-        updated: Date.now()
-      }, { merge: true });
+      await db.collection("leaderboard").doc(playerName).delete();
       playerName = "";
       localStorage.removeItem(NAME_KEY);
       refreshNameUI();
@@ -252,23 +248,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!db || !playerName) return;
     const now = Date.now();
     const score = Math.floor(bigbacks);
-    if (!force && (now - lastPushAt < 10000)) return; // update at least every 10s
+
+    // 🔹 Quota stretch: update only if 30s passed OR score difference >= 1000
+    if (!force && (now - lastPushAt < 30000) && Math.abs(score - lastPushedScore) < 1000) return;
 
     try{
-      const doc = await db.collection("leaderboard").doc(playerName).get();
-      if (doc.exists && doc.data().forceReset){
-        bigbacks = 0;
-        for (const k in shopItems){ shopItems[k].owned = 0; }
-        localStorage.removeItem(STORAGE_KEY);
-        await db.collection("leaderboard").doc(playerName).set({
-          score: 0,
-          updated: Date.now(),
-          forceReset: false
-        });
-        updateDisplay();
-        return;
-      }
-
       await db.collection("leaderboard").doc(playerName).set({
         score: score,
         updated: now
@@ -291,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
       snap.forEach(doc=>{
         const d = doc.data();
-        if (d.deleted) return; // skip removed
         const li = document.createElement("li");
         li.textContent = `${doc.id} — ${d.score}`;
         lbList.appendChild(li);
@@ -371,4 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadEvent();
   setInterval(loadEvent, 30000);
+
+  // 🔹 Leaderboard refresh every 60s instead of ~10s
+  setInterval(loadLeaderboard, 60000);
 });
