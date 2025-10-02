@@ -43,19 +43,14 @@ logoutBtn.addEventListener("click", async () => {
 
 // ----- Auth State -----
 window.auth.onAuthStateChanged(user => {
-  console.log("🔑 Auth state changed:", user?.email);
   if (user && user.email === "aaravsahni1037@gmail.com") {
-    console.log("✅ Admin login success:", user.email);
     loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}`;
     loadLeaderboard();
-    // 🔹 Only refresh once per minute
-    setInterval(loadLeaderboard, 60000);
   } else {
     loginSection.classList.remove("hidden");
     adminContent.classList.add("hidden");
-    if (user) console.warn("⚠️ Wrong Gmail:", user.email);
   }
 });
 
@@ -68,11 +63,9 @@ postAnnouncementBtn.addEventListener("click", async () => {
       message: msg,
       created: Date.now()
     });
-    console.log("✅ Announcement posted:", msg);
     alert("Announcement posted!");
     announcementInput.value = "";
   } catch (err) {
-    console.error("❌ Failed to post announcement:", err);
     alert("Failed to post: " + err.message);
   }
 });
@@ -88,10 +81,8 @@ setEventBtn.addEventListener("click", async () => {
       multiplier,
       created: Date.now()
     });
-    console.log(`✅ Event set: ${name} x${multiplier}`);
     alert("Event set!");
   } catch (err) {
-    console.error("❌ Failed to set event:", err);
     alert("Failed to set event: " + err.message);
   }
 });
@@ -100,10 +91,8 @@ setEventBtn.addEventListener("click", async () => {
 clearEventBtn.addEventListener("click", async () => {
   try {
     await window.db.collection("events").doc("current").delete();
-    console.log("✅ Event cleared");
     alert("Event cleared!");
   } catch (err) {
-    console.error("❌ Failed to clear event:", err);
     alert("Failed to clear event: " + err.message);
   }
 });
@@ -111,11 +100,10 @@ clearEventBtn.addEventListener("click", async () => {
 // ----- Load Leaderboard -----
 async function loadLeaderboard() {
   lbList.innerHTML = "";
-  console.log("📊 Loading leaderboard...");
   try {
     const snap = await window.db.collection("leaderboard")
       .orderBy("score", "desc")
-      .limit(50) // 🔹 50 players max
+      .limit(20)
       .get();
 
     snap.forEach(doc => {
@@ -130,10 +118,8 @@ async function loadLeaderboard() {
       li.textContent = "No players yet.";
       lbList.appendChild(li);
     }
-
-    console.log("✅ Leaderboard loaded with", lbList.children.length, "entries");
   } catch (err) {
-    console.error("❌ Leaderboard load error:", err);
+    console.error("Leaderboard load error:", err);
     const li = document.createElement("li");
     li.textContent = "Error loading leaderboard.";
     lbList.appendChild(li);
@@ -148,13 +134,11 @@ resetPlayerBtn.addEventListener("click", async () => {
     await window.db.collection("leaderboard").doc(player).set({
       score: 0,
       updated: Date.now(),
-      forceReset: true
+      forceReset: true   // 🔹 force reset flag
     }, { merge: true });
-    console.log(`✅ Player reset: ${player}`);
     alert(`Reset ${player}'s score to 0!`);
     loadLeaderboard();
   } catch (err) {
-    console.error("❌ Failed to reset player:", err);
     alert("Failed to reset: " + err.message);
   }
 });
@@ -164,17 +148,13 @@ resetAllBtn.addEventListener("click", async () => {
   try {
     const snap = await window.db.collection("leaderboard").get();
     const batch = window.db.batch();
-    let count = 0;
     snap.forEach(doc => {
       batch.set(doc.ref, { score: 0, updated: Date.now(), forceReset: true }, { merge: true });
-      count++;
     });
     await batch.commit();
-    console.log(`✅ Reset ALL scores (${count} players)`);
     alert("All scores reset!");
     loadLeaderboard();
   } catch (err) {
-    console.error("❌ Failed to reset all:", err);
     alert("Failed to reset all: " + err.message);
   }
 });
