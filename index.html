@@ -1,122 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Biggest Fatty</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- Announcement Banner -->
-    <div id="announcementBanner" class="announcement hidden"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biggest Fatty</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <!-- Announcement Banner -->
+  <div id="announcementBanner" class="announcement hidden"></div>
 
-    <!-- Event Banner -->
-    <div id="eventBanner" class="event hidden"></div>
+  <!-- Event Banner -->
+  <div id="eventBanner" class="event hidden"></div>
 
-    <!-- 🔹 Quota Banner -->
-    <div id="quotaBanner" class="quota hidden"></div>
+  <!-- 🔹 Quota Banner -->
+  <div id="quotaBanner" class="quota hidden"></div>
 
-    <div class="wrap">
-      <!-- HUD -->
-      <div class="hud card soft">
-        <div class="stat">
-          <div class="stat-label">Bigbacks</div>
-          <div id="score" class="stat-value">0</div>
-        </div>
-        <div class="divider"></div>
-        <div class="stat">
-          <div class="stat-label">Bigbacks/sec</div>
-          <div id="bps" class="stat-value">0</div>
-        </div>
+  <div class="wrap">
+    <!-- HUD -->
+    <div class="hud card soft">
+      <div class="stat">
+        <div class="stat-label">Bigbacks</div>
+        <div id="score" class="stat-value">0</div>
       </div>
-
-      <!-- Main Button -->
-      <button id="revealBtn" class="btn">
-        Who is the biggest fatty in the world?
-      </button>
-      <div id="result" class="result"></div>
-
-      <!-- Actions -->
-      <button id="shopBtn" class="btn shop-btn">Shop</button>
-      <button id="leaderboardBtn" class="btn shop-btn">Leaderboard</button>
-    </div>
-
-    <!-- Footer Credits -->
-    <footer class="footer">
-      <p>Made By Aarav The Person Who Isn't A Bigback</p>
-      <p>Harvey is my favorite meth addict</p>
-    </footer>
-
-    <!-- Shop Modal -->
-    <div id="shop" class="shop-backdrop" aria-hidden="true">
-      <div class="shop-modal card">
-        <div class="shop-header">
-          <h2>Shop</h2>
-          <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">✕</button>
-        </div>
-
-        <div class="shop-grid">
-          <!-- Your generators (Seb, Michael, Ibrahim, Bobby, Peter, Aarav, Alex, Oscar, Seb Ultimate, Harvey Meth Lab) -->
-          <!-- left exactly as before, no UI style changes -->
-        </div>
-
-        <p id="errorMsg" aria-live="polite"></p>
+      <div class="divider"></div>
+      <div class="stat">
+        <div class="stat-label">Bigbacks/sec</div>
+        <div id="bps" class="stat-value">0</div>
       </div>
     </div>
 
-    <!-- Leaderboard Modal -->
-    <div id="leaderboardBackdrop" class="lb-backdrop" aria-hidden="true">
-      <div class="lb-modal card">
-        <div class="shop-header">
-          <h2>Leaderboard</h2>
-          <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">✕</button>
-        </div>
+    <!-- Main Button -->
+    <button id="revealBtn" class="btn">Who is the biggest fatty in the world?</button>
+    <div id="result" class="result"></div>
 
-        <div id="nameRow" class="name-row">
-          <input id="playerNameInput" class="input" placeholder="Enter your name" maxlength="24"/>
-          <button id="saveNameBtn" class="btn">Save</button>
-        </div>
-        <p id="youAre" class="you-are hidden"></p>
+    <!-- Actions -->
+    <button id="shopBtn" class="btn shop-btn">Shop</button>
+    <button id="leaderboardBtn" class="btn shop-btn">Leaderboard</button>
+  </div>
 
-        <ol id="leaderboardList" class="lb-list"></ol>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Made By Aarav The Person Who Isn't A Bigback</p>
+    <p>Harvey is my favorite meth addict</p>
+  </footer>
 
-        <div class="name-actions">
-          <button id="deleteNameBtn" class="btn">Remove Me</button>
-        </div>
-
-        <p id="leaderboardHint" class="shop-hint">
-          Leaderboard updates every minute.
-        </p>
+  <!-- Shop Modal -->
+  <div id="shop" class="shop-backdrop" aria-hidden="true">
+    <div class="shop-modal card">
+      <div class="shop-header">
+        <h2>Shop</h2>
+        <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">✕</button>
       </div>
+
+      <div class="shop-grid">
+        <!-- All your generators (Seb, Michael, Ibrahim, Bobby, Peter, Aarav, Alex, Oscar, Seb Ultimate, Harvey Meth Lab) -->
+      </div>
+
+      <p id="errorMsg" aria-live="polite"></p>
     </div>
+  </div>
 
-    <!-- Audio -->
-    <audio id="drumroll" src="drumroll.mp3"></audio>
-    <audio id="sebastianAudio" src="sebastian.mp3"></audio>
-    <audio id="michaelAudio" src="michael.mp3"></audio>
-    <audio id="ibrahimAudio" src="ibrahim.mp3"></audio>
-    <audio id="bobbyAudio" src="bobby.mp3"></audio>
-    <audio id="peterAudio" src="peter.mp3"></audio>
-    <audio id="aaravAudio" src="aarav.mp3"></audio>
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardBackdrop" class="lb-backdrop" aria-hidden="true">
+    <div class="lb-modal card">
+      <div class="shop-header">
+        <h2>Leaderboard</h2>
+        <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">✕</button>
+      </div>
 
-    <!-- Firebase (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
-        authDomain: "sebisafatty.firebaseapp.com",
-        projectId: "sebisafatty",
-        storageBucket: "sebisafatty.firebasestorage.app",
-        messagingSenderId: "651122471293",
-        appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
-        measurementId: "G-KYW4WDBXH1"
-      };
-      firebase.initializeApp(firebaseConfig);
-      window._db = firebase.firestore();
-    </script>
+      <div id="nameRow" class="name-row">
+        <input id="playerNameInput" class="input" placeholder="Enter your name" maxlength="24"/>
+        <button id="saveNameBtn" class="btn">Save</button>
+      </div>
+      <p id="youAre" class="you-are hidden"></p>
 
-    <!-- Game Logic -->
-    <script src="script.js"></script>
-  </body>
+      <ol id="leaderboardList" class="lb-list"></ol>
+
+      <div class="name-actions">
+        <button id="deleteNameBtn" class="btn">Remove Me</button>
+      </div>
+
+      <p id="leaderboardHint" class="shop-hint">Leaderboard updates every minute.</p>
+    </div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="drumroll" src="drumroll.mp3"></audio>
+  <audio id="sebastianAudio" src="sebastian.mp3"></audio>
+  <audio id="michaelAudio" src="michael.mp3"></audio>
+  <audio id="ibrahimAudio" src="ibrahim.mp3"></audio>
+  <audio id="bobbyAudio" src="bobby.mp3"></audio>
+  <audio id="peterAudio" src="peter.mp3"></audio>
+  <audio id="aaravAudio" src="aarav.mp3"></audio>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
+      authDomain: "sebisafatty.firebaseapp.com",
+      projectId: "sebisafatty",
+      storageBucket: "sebisafatty.firebasestorage.app",
+      messagingSenderId: "651122471293",
+      appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
+      measurementId: "G-KYW4WDBXH1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    window._db = firebase.firestore();
+  </script>
+
+  <!-- Game Logic -->
+  <script src="script.js"></script>
+</body>
 </html>
