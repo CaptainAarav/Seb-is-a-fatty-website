@@ -1,4 +1,5 @@
 // ----- DOM Refs -----
+console.log("auth:", window.auth, "db:", window.db);
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginSection = document.getElementById("loginSection");
