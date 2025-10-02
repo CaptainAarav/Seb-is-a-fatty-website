@@ -2,52 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Biggest Fatty</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biggest Fatty Admin Panel</title>
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
-  <div class="wrap">
-    <h1>Admin Panel</h1>
-
-    <!-- Login Section -->
-    <div id="loginSection">
-      <button id="loginBtn" class="btn">Login with Google</button>
-    </div>
-
-    <!-- Admin Content -->
-    <div id="adminContent" class="hidden">
-      <div class="top-bar">
-        <p id="welcomeMsg"></p>
-        <button id="logoutBtn" class="btn danger">Logout</button>
-      </div>
-
-      <h2>📢 Announcements</h2>
-      <input id="announcementInput" class="input" placeholder="Enter announcement..." />
-      <button id="postAnnouncementBtn" class="btn">Post Announcement</button>
-
-      <h2>🎉 Events</h2>
-      <input id="eventNameInput" class="input" placeholder="Event name..." />
-      <input id="eventMultiplierInput" type="number" class="input" placeholder="Multiplier (e.g. 2)" />
-      <button id="setEventBtn" class="btn">Set Event</button>
-      <button id="clearEventBtn" class="btn danger">Clear Event</button>
-
-      <h2>🏆 Leaderboard</h2>
-      <ol id="leaderboardList" class="lb-list"></ol>
-
-      <h2>🔧 Reset Scores</h2>
-      <input id="resetPlayerInput" class="input" placeholder="Enter player name..." />
-      <button id="resetPlayerBtn" class="btn danger">Reset Player Score</button>
-      <button id="resetAllBtn" class="btn danger">Reset ALL Scores</button>
-    </div>
+  <div id="loginSection" class="card soft">
+    <h1>Admin Login</h1>
+    <button id="loginBtn" class="btn">Login with Google</button>
   </div>
 
-  <!-- Firebase SDKs -->
+  <div id="adminContent" class="hidden">
+    <header class="card soft">
+      <h1>Biggest Fatty Admin Panel</h1>
+      <p id="welcomeMsg"></p>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </header>
+
+    <!-- Announcements -->
+    <section class="card soft">
+      <h2>Post Announcement</h2>
+      <input id="announcementInput" class="input" placeholder="Type announcement"/>
+      <button id="postAnnouncementBtn" class="btn">Post</button>
+    </section>
+
+    <!-- Events -->
+    <section class="card soft">
+      <h2>Set Event</h2>
+      <input id="eventNameInput" class="input" placeholder="Event name"/>
+      <input id="eventMultiplierInput" type="number" step="0.1" class="input" placeholder="Multiplier"/>
+      <button id="setEventBtn" class="btn">Set Event</button>
+      <button id="clearEventBtn" class="btn">Clear Event</button>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="card soft">
+      <h2>Leaderboard</h2>
+      <!-- 🔹 Scrollable container -->
+      <div class="lb-container">
+        <ol id="leaderboardList" class="lb-list"></ol>
+      </div>
+    </section>
+
+    <!-- Reset -->
+    <section class="card soft">
+      <h2>Reset Scores</h2>
+      <input id="resetPlayerInput" class="input" placeholder="Enter player name"/>
+      <button id="resetPlayerBtn" class="btn">Reset Player</button>
+      <button id="resetAllBtn" class="btn">Reset All</button>
+    </section>
+  </div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
-
-  <!-- Firebase Init -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
@@ -58,15 +67,11 @@
       appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
       measurementId: "G-KYW4WDBXH1"
     };
-
     firebase.initializeApp(firebaseConfig);
-
-    // 🔹 Make them GLOBAL so admin.js can access
     window.auth = firebase.auth();
     window.db = firebase.firestore();
   </script>
 
-  <!-- Admin Logic -->
   <script src="admin.js"></script>
 </body>
 </html>
