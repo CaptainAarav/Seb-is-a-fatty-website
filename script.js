@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const buyAlexBtn = document.getElementById("buyAlexBtn");
   const buyOscarBtn = document.getElementById("buyOscarBtn");
   const buySebUltimateBtn = document.getElementById("buySebUltimateBtn");
+  const buyHarveyBtn = document.getElementById("buyHarveyBtn");
 
   const sebOwnedDisplay = document.getElementById("sebOwned");
   const michaelOwnedDisplay = document.getElementById("michaelOwned");
@@ -29,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const alexOwnedDisplay = document.getElementById("alexOwned");
   const oscarOwnedDisplay = document.getElementById("oscarOwned");
   const sebUltimateOwnedDisplay = document.getElementById("sebUltimateOwned");
+  const harveyOwnedDisplay = document.getElementById("harveyOwned");
   const errorMsg = document.getElementById("errorMsg");
 
   // Leaderboard DOM
@@ -71,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alex:      { cost: 100000,    bps: 10000,      owned: 0, button: buyAlexBtn,      ownedEl: alexOwnedDisplay },
     oscar:     { cost: 1000000,   bps: 100000,     owned: 0, button: buyOscarBtn,     ownedEl: oscarOwnedDisplay },
     sebUltimate:{ cost: 1000000000, bps: 10000000, owned: 0, button: buySebUltimateBtn, ownedEl: sebUltimateOwnedDisplay },
+    harvey:    { cost: 5000000000, bps: 300000000, owned: 0, button: buyHarveyBtn,    ownedEl: harveyOwnedDisplay },
   };
 
   // ----- Event State -----
@@ -204,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = window._db || null;
   let playerName = (localStorage.getItem(NAME_KEY) || "").trim().slice(0,24) || "";
   let lastPushAt = 0;
-  let lastPushedScore = -1;
 
   function refreshNameUI(){
     if (playerName){
@@ -249,17 +251,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = Date.now();
     const score = Math.floor(bigbacks);
 
-    // 🔹 Quota stretch: update only if 30s passed OR score difference >= 1000
-    if (!force && (now - lastPushAt < 30000) && Math.abs(score - lastPushedScore) < 1000) return;
+    // 🔹 Only push once every 60s (unless forced)
+    if (!force && (now - lastPushAt < 60000)) return;
 
-    try{
+    try {
       await db.collection("leaderboard").doc(playerName).set({
         score: score,
         updated: now
       }, { merge: true });
 
       lastPushAt = now;
-      lastPushedScore = score;
     }catch(e){ console.warn("Failed to update leaderboard:", e); }
   }
 
@@ -355,6 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadEvent();
   setInterval(loadEvent, 30000);
 
-  // 🔹 Leaderboard refresh every 60s instead of ~10s
+  // 🔹 Leaderboard refresh every 60s
   setInterval(loadLeaderboard, 60000);
 });
