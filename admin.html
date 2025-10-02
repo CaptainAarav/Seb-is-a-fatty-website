@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel - Biggest Fatty</title>
+  <!-- Pixel Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
@@ -58,10 +60,7 @@
       appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
       measurementId: "G-KYW4WDBXH1"
     };
-
     firebase.initializeApp(firebaseConfig);
-
-    // 🔹 Make them GLOBAL so admin.js can access
     window.auth = firebase.auth();
     window.db = firebase.firestore();
   </script>
