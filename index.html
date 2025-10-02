@@ -13,6 +13,9 @@
     <!-- Event Banner -->
     <div id="eventBanner" class="event hidden"></div>
 
+    <!-- Quota Banner -->
+    <div id="quotaBanner" class="quota hidden"></div>
+
     <div class="wrap">
       <!-- HUD -->
       <div class="hud card soft">
@@ -53,9 +56,7 @@
       <div class="shop-modal card">
         <div class="shop-header">
           <h2>Shop</h2>
-          <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">
-            ✕
-          </button>
+          <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">✕</button>
         </div>
 
         <div class="shop-grid">
@@ -141,7 +142,7 @@
             </div>
           </div>
 
-          <!-- 🔹 New Harvey Meth Lab Generator -->
+          <!-- Harvey Meth Lab Generator -->
           <div class="shop-item card soft">
             <div class="shop-title">Harvey Meth Lab Generator</div>
             <div class="shop-sub">+300,000,000 BB/sec</div>
@@ -161,18 +162,11 @@
       <div class="lb-modal card">
         <div class="shop-header">
           <h2>Leaderboard</h2>
-          <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">
-            ✕
-          </button>
+          <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">✕</button>
         </div>
 
         <div id="nameRow" class="name-row">
-          <input
-            id="playerNameInput"
-            class="input"
-            placeholder="Enter your name"
-            maxlength="24"
-          />
+          <input id="playerNameInput" class="input" placeholder="Enter your name" maxlength="24"/>
           <button id="saveNameBtn" class="btn">Save</button>
         </div>
         <p id="youAre" class="you-are hidden"></p>
@@ -184,7 +178,7 @@
         </div>
 
         <p id="leaderboardHint" class="shop-hint">
-          Leaderboard updates every ~30s or when your score jumps.
+          Leaderboard updates every minute.
         </p>
       </div>
     </div>
@@ -209,7 +203,7 @@
         storageBucket: "sebisafatty.firebasestorage.app",
         messagingSenderId: "651122471293",
         appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
-        measurementId: "G-KYW4WDBXH1",
+        measurementId: "G-KYW4WDBXH1"
       };
       firebase.initializeApp(firebaseConfig);
       window._db = firebase.firestore();
