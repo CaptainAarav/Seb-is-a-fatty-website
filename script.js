@@ -14,24 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const buyMichaelBtn = document.getElementById("buyMichaelBtn");
   const buyIbrahimBtn = document.getElementById("buyIbrahimBtn");
   const buyBobbyBtn = document.getElementById("buyBobbyBtn");
+  const buyPeterBtn = document.getElementById("buyPeterBtn");
   const buyAaravBtn = document.getElementById("buyAaravBtn");
+  const buyAlexBtn = document.getElementById("buyAlexBtn");
+  const buyOscarBtn = document.getElementById("buyOscarBtn");
+  const buySebUltimateBtn = document.getElementById("buySebUltimateBtn");
 
   const sebOwnedDisplay = document.getElementById("sebOwned");
   const michaelOwnedDisplay = document.getElementById("michaelOwned");
   const ibrahimOwnedDisplay = document.getElementById("ibrahimOwned");
   const bobbyOwnedDisplay = document.getElementById("bobbyOwned");
+  const peterOwnedDisplay = document.getElementById("peterOwned");
   const aaravOwnedDisplay = document.getElementById("aaravOwned");
-  const errorMsg = document.getElementById("errorMsg");
-
-  // New generator DOM refs
-  const buyAlexBtn = document.getElementById("buyAlexBtn");
   const alexOwnedDisplay = document.getElementById("alexOwned");
-
-  const buyOscarBtn = document.getElementById("buyOscarBtn");
   const oscarOwnedDisplay = document.getElementById("oscarOwned");
-
-  const buySebUltimateBtn = document.getElementById("buySebUltimateBtn");
   const sebUltimateOwnedDisplay = document.getElementById("sebUltimateOwned");
+  const errorMsg = document.getElementById("errorMsg");
 
   // Leaderboard DOM
   const leaderboardBtn = document.getElementById("leaderboardBtn");
@@ -68,10 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
     michael:   { cost: 50,        bps: 5,          owned: 0, button: buyMichaelBtn,   ownedEl: michaelOwnedDisplay },
     ibrahim:   { cost: 100,       bps: 10,         owned: 0, button: buyIbrahimBtn,   ownedEl: ibrahimOwnedDisplay },
     bobby:     { cost: 500,       bps: 100,        owned: 0, button: buyBobbyBtn,     ownedEl: bobbyOwnedDisplay },
+    peterGen:  { cost: 5000,      bps: 3000,       owned: 0, button: buyPeterBtn,     ownedEl: peterOwnedDisplay },
     aaravGen:  { cost: 10000,     bps: 1000,       owned: 0, button: buyAaravBtn,     ownedEl: aaravOwnedDisplay },
     alex:      { cost: 100000,    bps: 10000,      owned: 0, button: buyAlexBtn,      ownedEl: alexOwnedDisplay },
     oscar:     { cost: 1000000,   bps: 100000,     owned: 0, button: buyOscarBtn,     ownedEl: oscarOwnedDisplay },
-    sebUltimate:{ cost: 1000000000, bps: 1000000000, owned: 0, button: buySebUltimateBtn, ownedEl: sebUltimateOwnedDisplay },
+    sebUltimate:{ cost: 1000000000, bps: 10000000, owned: 0, button: buySebUltimateBtn, ownedEl: sebUltimateOwnedDisplay },
   };
 
   // ----- Event State -----
