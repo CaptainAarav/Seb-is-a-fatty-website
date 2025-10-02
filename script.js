@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM Refs
+  // HUD
   const scoreDisplay = document.getElementById("score");
   const bpsDisplay = document.getElementById("bps");
   const errorMsg = document.getElementById("errorMsg");
+
+  // Leaderboard
   const lbList = document.getElementById("leaderboardList");
   const leaderboardBtn = document.getElementById("leaderboardBtn");
   const lbBackdrop = document.getElementById("leaderboardBackdrop");
