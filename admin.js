@@ -1,5 +1,4 @@
 // ----- DOM Refs -----
-console.log("auth:", window.auth, "db:", window.db);
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginSection = document.getElementById("loginSection");
@@ -19,6 +18,9 @@ const lbList = document.getElementById("leaderboardList");
 const resetPlayerInput = document.getElementById("resetPlayerInput");
 const resetPlayerBtn = document.getElementById("resetPlayerBtn");
 const resetAllBtn = document.getElementById("resetAllBtn");
+
+// ----- Debug -----
+console.log("Admin panel loaded. Auth:", window.auth, "DB:", window.db);
 
 // ----- Login -----
 loginBtn.addEventListener("click", async () => {
@@ -45,11 +47,13 @@ logoutBtn.addEventListener("click", async () => {
 // ----- Auth State -----
 window.auth.onAuthStateChanged(user => {
   if (user && user.email === "aaravsahni1037@gmail.com") {
+    console.log("Admin logged in:", user.email);
     loginSection.classList.add("hidden");
     adminContent.classList.remove("hidden");
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}`;
     loadLeaderboard();
   } else {
+    console.warn("Not authorized user or not logged in.");
     loginSection.classList.remove("hidden");
     adminContent.classList.add("hidden");
   }
@@ -67,6 +71,7 @@ postAnnouncementBtn.addEventListener("click", async () => {
     alert("Announcement posted!");
     announcementInput.value = "";
   } catch (err) {
+    console.error("Failed to post announcement:", err);
     alert("Failed to post: " + err.message);
   }
 });
@@ -84,6 +89,7 @@ setEventBtn.addEventListener("click", async () => {
     });
     alert("Event set!");
   } catch (err) {
+    console.error("Failed to set event:", err);
     alert("Failed to set event: " + err.message);
   }
 });
@@ -94,6 +100,7 @@ clearEventBtn.addEventListener("click", async () => {
     await window.db.collection("events").doc("current").delete();
     alert("Event cleared!");
   } catch (err) {
+    console.error("Failed to clear event:", err);
     alert("Failed to clear event: " + err.message);
   }
 });
@@ -104,7 +111,7 @@ async function loadLeaderboard() {
   try {
     const snap = await window.db.collection("leaderboard")
       .orderBy("score", "desc")
-      .limit(20)
+      .limit(50)   // 🔹 bumped up to 50 so you see more
       .get();
 
     snap.forEach(doc => {
@@ -135,11 +142,12 @@ resetPlayerBtn.addEventListener("click", async () => {
     await window.db.collection("leaderboard").doc(player).set({
       score: 0,
       updated: Date.now(),
-      forceReset: true   // 🔹 force reset flag
+      forceReset: true
     }, { merge: true });
     alert(`Reset ${player}'s score to 0!`);
     loadLeaderboard();
   } catch (err) {
+    console.error("Failed to reset player:", err);
     alert("Failed to reset: " + err.message);
   }
 });
@@ -156,6 +164,7 @@ resetAllBtn.addEventListener("click", async () => {
     alert("All scores reset!");
     loadLeaderboard();
   } catch (err) {
+    console.error("Failed to reset all:", err);
     alert("Failed to reset all: " + err.message);
   }
 });
