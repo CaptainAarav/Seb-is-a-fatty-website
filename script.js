@@ -23,6 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const aaravOwnedDisplay = document.getElementById("aaravOwned");
   const errorMsg = document.getElementById("errorMsg");
 
+  // New generator DOM refs
+  const buyAlexBtn = document.getElementById("buyAlexBtn");
+  const alexOwnedDisplay = document.getElementById("alexOwned");
+
+  const buyOscarBtn = document.getElementById("buyOscarBtn");
+  const oscarOwnedDisplay = document.getElementById("oscarOwned");
+
+  const buySebUltimateBtn = document.getElementById("buySebUltimateBtn");
+  const sebUltimateOwnedDisplay = document.getElementById("sebUltimateOwned");
+
   // Leaderboard DOM
   const leaderboardBtn = document.getElementById("leaderboardBtn");
   const lbBackdrop = document.getElementById("leaderboardBackdrop");
@@ -54,11 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let bigbacks = 0;
 
   let shopItems = {
-    seb:     { cost: 20,    bps: 1,    owned: 0, button: buySebBtn,     ownedEl: sebOwnedDisplay     },
-    michael: { cost: 50,    bps: 5,    owned: 0, button: buyMichaelBtn, ownedEl: michaelOwnedDisplay },
-    ibrahim: { cost: 100,   bps: 10,   owned: 0, button: buyIbrahimBtn, ownedEl: ibrahimOwnedDisplay },
-    bobby:   { cost: 500,   bps: 10,   owned: 0, button: buyBobbyBtn,   ownedEl: bobbyOwnedDisplay   },
-    aaravGen:{ cost: 10000, bps: 1000, owned: 0, button: buyAaravBtn,   ownedEl: aaravOwnedDisplay   },
+    seb:       { cost: 20,        bps: 1,          owned: 0, button: buySebBtn,       ownedEl: sebOwnedDisplay },
+    michael:   { cost: 50,        bps: 5,          owned: 0, button: buyMichaelBtn,   ownedEl: michaelOwnedDisplay },
+    ibrahim:   { cost: 100,       bps: 10,         owned: 0, button: buyIbrahimBtn,   ownedEl: ibrahimOwnedDisplay },
+    bobby:     { cost: 500,       bps: 100,        owned: 0, button: buyBobbyBtn,     ownedEl: bobbyOwnedDisplay },
+    aaravGen:  { cost: 10000,     bps: 1000,       owned: 0, button: buyAaravBtn,     ownedEl: aaravOwnedDisplay },
+    alex:      { cost: 100000,    bps: 10000,      owned: 0, button: buyAlexBtn,      ownedEl: alexOwnedDisplay },
+    oscar:     { cost: 1000000,   bps: 100000,     owned: 0, button: buyOscarBtn,     ownedEl: oscarOwnedDisplay },
+    sebUltimate:{ cost: 1000000000, bps: 1000000000, owned: 0, button: buySebUltimateBtn, ownedEl: sebUltimateOwnedDisplay },
   };
 
   // ----- Event State -----
@@ -219,7 +232,11 @@ document.addEventListener("DOMContentLoaded", () => {
   async function deleteMyScore() {
     if (!db || !playerName) return;
     try {
-      await db.collection("leaderboard").doc(playerName).delete();
+      await db.collection("leaderboard").doc(playerName).set({
+        score: 0,
+        deleted: true,
+        updated: Date.now()
+      }, { merge: true });
       playerName = "";
       localStorage.removeItem(NAME_KEY);
       refreshNameUI();
@@ -236,14 +253,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!db || !playerName) return;
     const now = Date.now();
     const score = Math.floor(bigbacks);
-    if (!force && (now - lastPushAt < 10000) && Math.abs(score - lastPushedScore) < 100) return;
+    if (!force && (now - lastPushAt < 10000)) return; // update at least every 10s
 
     try{
-      // Check if admin flagged reset
       const doc = await db.collection("leaderboard").doc(playerName).get();
       if (doc.exists && doc.data().forceReset){
         bigbacks = 0;
-        for (const k in shopItems){ shopItems[k].owned = 0; shopItems[k].cost = shopItems[k].cost; }
+        for (const k in shopItems){ shopItems[k].owned = 0; }
         localStorage.removeItem(STORAGE_KEY);
         await db.collection("leaderboard").doc(playerName).set({
           score: 0,
@@ -276,6 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
       snap.forEach(doc=>{
         const d = doc.data();
+        if (d.deleted) return; // skip removed
         const li = document.createElement("li");
         li.textContent = `${doc.id} — ${d.score}`;
         lbList.appendChild(li);
