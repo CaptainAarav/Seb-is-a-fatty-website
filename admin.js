@@ -50,7 +50,8 @@ window.auth.onAuthStateChanged(user => {
     adminContent.classList.remove("hidden");
     welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}`;
     loadLeaderboard();
-    setInterval(loadLeaderboard, 60000); // 🔹 refresh leaderboard every 60s
+    // 🔹 Only refresh once per minute
+    setInterval(loadLeaderboard, 60000);
   } else {
     loginSection.classList.remove("hidden");
     adminContent.classList.add("hidden");
@@ -114,7 +115,7 @@ async function loadLeaderboard() {
   try {
     const snap = await window.db.collection("leaderboard")
       .orderBy("score", "desc")
-      .limit(50) // 🔹 50 players max per load
+      .limit(50) // 🔹 50 players max
       .get();
 
     snap.forEach(doc => {
