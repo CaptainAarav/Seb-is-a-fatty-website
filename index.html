@@ -1,197 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Biggest Fatty</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-  <!-- Announcement Banner -->
-  <div id="announcementBanner" class="announcement hidden"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Biggest Fatty</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Announcement Banner -->
+    <div id="announcementBanner" class="announcement hidden"></div>
 
-  <!-- Event Banner -->
-  <div id="eventBanner" class="event hidden"></div>
+    <!-- Event Banner -->
+    <div id="eventBanner" class="event hidden"></div>
 
-  <!-- 🔹 Quota Banner -->
-  <div id="quotaBanner" class="quota hidden"></div>
-
-  <div class="wrap">
-    <!-- HUD -->
-    <div class="hud card soft">
-      <div class="stat">
-        <div class="stat-label">Bigbacks</div>
-        <div id="score" class="stat-value">0</div>
+    <div class="wrap">
+      <!-- HUD -->
+      <div class="hud card soft">
+        <div class="stat">
+          <div class="stat-label">Bigbacks</div>
+          <div id="score" class="stat-value">0</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <div class="stat-label">Bigbacks/sec</div>
+          <div id="bps" class="stat-value">0</div>
+        </div>
       </div>
-      <div class="divider"></div>
-      <div class="stat">
-        <div class="stat-label">Bigbacks/sec</div>
-        <div id="bps" class="stat-value">0</div>
+
+      <!-- Main Button -->
+      <button id="revealBtn" class="btn">
+        Who is the biggest fatty in the world?
+      </button>
+      <div id="result" class="result"></div>
+
+      <!-- Actions -->
+      <button id="shopBtn" class="btn shop-btn">
+        Shop <span class="shop-dot"></span>
+      </button>
+      <button id="leaderboardBtn" class="btn shop-btn">
+        Leaderboard <span class="shop-dot"></span>
+      </button>
+    </div>
+
+    <!-- Footer Credits -->
+    <footer class="footer">
+      <p>Made By Aarav The Person Who Isn't A Bigback</p>
+      <p>Harvey is my favorite meth addict</p>
+    </footer>
+
+    <!-- Shop Modal -->
+    <div id="shop" class="shop-backdrop" aria-hidden="true">
+      <div class="shop-modal card">
+        <div class="shop-header">
+          <h2>Shop</h2>
+          <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">
+            ✕
+          </button>
+        </div>
+
+        <div class="shop-grid">
+          <div class="shop-item card soft">
+            <div class="shop-title">Seb Generator</div>
+            <div class="shop-sub">+1 BB/sec</div>
+            <div class="shop-row">
+              <button id="buySebBtn" class="btn buy-btn">Buy (Cost: 20)</button>
+              <div id="sebOwned" class="owned">Owned: 0</div>
+            </div>
+          </div>
+
+          <div class="shop-item card soft">
+            <div class="shop-title">Michael Generator</div>
+            <div class="shop-sub">+5 BB/sec</div>
+            <div class="shop-row">
+              <button id="buyMichaelBtn" class="btn buy-btn">Buy (Cost: 50)</button>
+              <div id="michaelOwned" class="owned">Owned: 0</div>
+            </div>
+          </div>
+
+          <div class="shop-item card soft">
+            <div class="shop-title">Ibrahim Generator</div>
+            <div class="shop-sub">+10 BB/sec</div>
+            <div class="shop-row">
+              <button id="buyIbrahimBtn" class="btn buy-btn">Buy (Cost: 100)</button>
+              <div id="ibrahimOwned" class="owned">Owned: 0</div>
+            </div>
+          </div>
+
+          <div class="shop-item card soft">
+            <div class="shop-title">Bobby Generator</div>
+            <div class="shop-sub">+10 BB/sec</div>
+            <div class="shop-row">
+              <button id="buyBobbyBtn" class="btn buy-btn">Buy (Cost: 500)</button>
+              <div id="bobbyOwned" class="owned">Owned: 0</div>
+            </div>
+          </div>
+
+          <div class="shop-item card soft">
+            <div class="shop-title">Aarav Super Mythic Generator</div>
+            <div class="shop-sub">+1000 BB/sec</div>
+            <div class="shop-row">
+              <button id="buyAaravBtn" class="btn buy-btn">Buy (Cost: 10000)</button>
+              <div id="aaravOwned" class="owned">Owned: 0</div>
+            </div>
+          </div>
+        </div>
+
+        <p id="errorMsg" aria-live="polite"></p>
       </div>
     </div>
 
-    <!-- Main Button -->
-    <button id="revealBtn" class="btn">Who is the biggest fatty in the world?</button>
-    <div id="result" class="result"></div>
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardBackdrop" class="lb-backdrop" aria-hidden="true">
+      <div class="lb-modal card">
+        <div class="shop-header">
+          <h2>Leaderboard</h2>
+          <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">
+            ✕
+          </button>
+        </div>
 
-    <!-- Actions -->
-    <button id="shopBtn" class="btn shop-btn">Shop</button>
-    <button id="leaderboardBtn" class="btn shop-btn">Leaderboard</button>
-  </div>
+        <div id="nameRow" class="name-row">
+          <input
+            id="playerNameInput"
+            class="input"
+            placeholder="Enter your name"
+            maxlength="24"
+          />
+          <button id="saveNameBtn" class="btn">Save</button>
+        </div>
+        <p id="youAre" class="you-are hidden"></p>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>Made By Aarav The Person Who Isn't A Bigback</p>
-    <p>Harvey is my favorite meth addict</p>
-  </footer>
+        <ol id="leaderboardList" class="lb-list"></ol>
 
-  <!-- Shop Modal -->
-  <div id="shop" class="shop-backdrop" aria-hidden="true">
-    <div class="shop-modal card">
-      <div class="shop-header">
-        <h2>Shop</h2>
-        <button id="closeShopBtn" class="btn icon-btn" aria-label="Close">✕</button>
+        <div class="name-actions">
+          <button id="deleteNameBtn" class="btn">Remove Me</button>
+        </div>
+
+        <p id="leaderboardHint" class="shop-hint">
+          Leaderboard updates every ~10s or when your score changes.
+        </p>
       </div>
-
-      <div class="shop-grid">
-        <!-- Generators -->
-        <div class="shop-item card soft">
-          <div class="shop-title">Seb Generator</div>
-          <div class="shop-sub">+1 BB/sec</div>
-          <div class="shop-row">
-            <button id="buySebBtn" class="btn buy-btn">Buy (Cost: 20)</button>
-            <div id="sebOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Michael Generator</div>
-          <div class="shop-sub">+5 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyMichaelBtn" class="btn buy-btn">Buy (Cost: 50)</button>
-            <div id="michaelOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Ibrahim Generator</div>
-          <div class="shop-sub">+10 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyIbrahimBtn" class="btn buy-btn">Buy (Cost: 100)</button>
-            <div id="ibrahimOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Bobby Generator</div>
-          <div class="shop-sub">+100 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyBobbyBtn" class="btn buy-btn">Buy (Cost: 500)</button>
-            <div id="bobbyOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Peter Generator</div>
-          <div class="shop-sub">+3,000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyPeterBtn" class="btn buy-btn">Buy (Cost: 5,000)</button>
-            <div id="peterOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Aarav Super Mythic Generator</div>
-          <div class="shop-sub">+1000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyAaravBtn" class="btn buy-btn">Buy (Cost: 10,000)</button>
-            <div id="aaravOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Alex Generator</div>
-          <div class="shop-sub">+10,000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyAlexBtn" class="btn buy-btn">Buy (Cost: 100,000)</button>
-            <div id="alexOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Oscar Super Rare Generator</div>
-          <div class="shop-sub">+100,000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyOscarBtn" class="btn buy-btn">Buy (Cost: 1,000,000)</button>
-            <div id="oscarOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Sebastian Kavanagh Ultimate Generator</div>
-          <div class="shop-sub">+10,000,000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buySebUltimateBtn" class="btn buy-btn">Buy (Cost: 1,000,000,000)</button>
-            <div id="sebUltimateOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-        <div class="shop-item card soft">
-          <div class="shop-title">Harvey Meth Lab Generator</div>
-          <div class="shop-sub">+300,000,000 BB/sec</div>
-          <div class="shop-row">
-            <button id="buyHarveyBtn" class="btn buy-btn">Buy (Cost: 5,000,000,000)</button>
-            <div id="harveyOwned" class="owned">Owned: 0</div>
-          </div>
-        </div>
-      </div>
-
-      <p id="errorMsg" aria-live="polite"></p>
     </div>
-  </div>
 
-  <!-- Leaderboard Modal -->
-  <div id="leaderboardBackdrop" class="lb-backdrop" aria-hidden="true">
-    <div class="lb-modal card">
-      <div class="shop-header">
-        <h2>Leaderboard</h2>
-        <button id="closeLeaderboardBtn" class="btn icon-btn" aria-label="Close">✕</button>
-      </div>
+    <!-- Audio -->
+    <audio id="drumroll" src="drumroll.mp3"></audio>
+    <audio id="sebastianAudio" src="sebastian.mp3"></audio>
+    <audio id="michaelAudio" src="michael.mp3"></audio>
+    <audio id="ibrahimAudio" src="ibrahim.mp3"></audio>
+    <audio id="bobbyAudio" src="bobby.mp3"></audio>
+    <audio id="peterAudio" src="peter.mp3"></audio>
+    <audio id="aaravAudio" src="aarav.mp3"></audio>
 
-      <div id="nameRow" class="name-row">
-        <input id="playerNameInput" class="input" placeholder="Enter your name" maxlength="24"/>
-        <button id="saveNameBtn" class="btn">Save</button>
-      </div>
-      <p id="youAre" class="you-are hidden"></p>
+    <!-- Firebase (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
+        authDomain: "sebisafatty.firebaseapp.com",
+        projectId: "sebisafatty",
+        storageBucket: "sebisafatty.firebasestorage.app",
+        messagingSenderId: "651122471293",
+        appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
+        measurementId: "G-KYW4WDBXH1",
+      };
+      firebase.initializeApp(firebaseConfig);
+      window._db = firebase.firestore();
+    </script>
 
-      <ol id="leaderboardList" class="lb-list"></ol>
-
-      <div class="name-actions">
-        <button id="deleteNameBtn" class="btn">Remove Me</button>
-      </div>
-
-      <p id="leaderboardHint" class="shop-hint">Leaderboard updates every minute.</p>
-    </div>
-  </div>
-
-  <!-- Audio -->
-  <audio id="drumroll" src="drumroll.mp3"></audio>
-  <audio id="sebastianAudio" src="sebastian.mp3"></audio>
-  <audio id="michaelAudio" src="michael.mp3"></audio>
-  <audio id="ibrahimAudio" src="ibrahim.mp3"></audio>
-  <audio id="bobbyAudio" src="bobby.mp3"></audio>
-  <audio id="peterAudio" src="peter.mp3"></audio>
-  <audio id="aaravAudio" src="aarav.mp3"></audio>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQLauRwaKyOHmWU-AW4zMzsj15grFWTAc",
-      authDomain: "sebisafatty.firebaseapp.com",
-      projectId: "sebisafatty",
-      storageBucket: "sebisafatty.firebasestorage.app",
-      messagingSenderId: "651122471293",
-      appId: "1:651122471293:web:35cdf46a44a3d18207dc14",
-      measurementId: "G-KYW4WDBXH1"
-    };
-    firebase.initializeApp(firebaseConfig);
-    window._db = firebase.firestore();
-  </script>
-
-  <!-- Game Logic -->
-  <script src="script.js"></script>
-</body>
+    <!-- Game Logic -->
+    <script src="script.js"></script>
+  </body>
 </html>
