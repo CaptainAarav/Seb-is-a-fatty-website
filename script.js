@@ -44,9 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const youAre = document.getElementById("youAre");
   const deleteNameBtn = document.getElementById("deleteNameBtn");
 
-  // Announcement + Event DOM
+  // Announcement + Event + Quota
   const banner = document.getElementById("announcementBanner");
   const eventBanner = document.getElementById("eventBanner");
+  const quotaBanner = document.getElementById("quotaBanner");
 
   // Audio map
   const audios = {
@@ -76,9 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
     harvey:    { cost: 5000000000, bps: 300000000, owned: 0, button: buyHarveyBtn,    ownedEl: harveyOwnedDisplay },
   };
 
-  // ----- Event State -----
   let eventMultiplier = 1;
-  let eventName = "";
+  let lastPushAt = 0;
+  let playerName = (localStorage.getItem(NAME_KEY) || "").trim().slice(0,24) || "";
+  const db = window._db || null;
 
   // ----- Functions -----
   function calcBPS(){
@@ -123,15 +125,15 @@ document.addEventListener("DOMContentLoaded", () => {
     maybePushLeaderboard();
   }
 
-  // RNG with 0.01% Aarav chance
+  // RNG
   function pickWinner(){
-    const r = Math.floor(Math.random()*10000); // 0–9999
-    if (r < 8000) return "Sebastian Kavanagh"; // 80%
-    if (r < 9000) return "Michael Winsor";     // 10%
-    if (r < 9500) return "Ibrahim";            // 5%
-    if (r < 9600) return "Bobby";              // 1%
-    if (r < 9999) return "Peter";              // 3.99%
-    return "Aarav Sahni";                      // 0.01%
+    const r = Math.floor(Math.random()*10000);
+    if (r < 8000) return "Sebastian Kavanagh";
+    if (r < 9000) return "Michael Winsor";
+    if (r < 9500) return "Ibrahim";
+    if (r < 9600) return "Bobby";
+    if (r < 9999) return "Peter";
+    return "Aarav Sahni";
   }
 
   // Reveal button
@@ -162,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   });
 
-  // Shop
+  // Shop interactions
   shopBtn.addEventListener("click", ()=>{
     shopBackdrop.style.display = "flex";
     void document.body.offsetWidth;
@@ -203,11 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 1000);
 
-  // ----- Leaderboard -----
-  const db = window._db || null;
-  let playerName = (localStorage.getItem(NAME_KEY) || "").trim().slice(0,24) || "";
-  let lastPushAt = 0;
-
+  // Leaderboard
   function refreshNameUI(){
     if (playerName){
       nameRow.classList.add("hidden");
@@ -229,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLeaderboard();
   });
 
-  // Remove Me button
   async function deleteMyScore() {
     if (!db || !playerName) return;
     try {
@@ -238,124 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem(NAME_KEY);
       refreshNameUI();
       loadLeaderboard();
-    } catch(e) {
-      console.error("Failed to delete score:", e);
-    }
+    } catch(e) { console.error("Failed to delete score:", e); }
   }
-  if (deleteNameBtn) {
-    deleteNameBtn.addEventListener("click", deleteMyScore);
-  }
+  if (deleteNameBtn) deleteNameBtn.addEventListener("click", deleteMyScore);
 
   async function maybePushLeaderboard(force=false){
     if (!db || !playerName) return;
     const now = Date.now();
     const score = Math.floor(bigbacks);
-
-    // 🔹 Only push once every 60s (unless forced)
-    if (!force && (now - lastPushAt < 60000)) return;
-
+    if (!force && (now - lastPushAt < 60000)) return; // 🔹 once per 60s
     try {
-      await db.collection("leaderboard").doc(playerName).set({
-        score: score,
-        updated: now
-      }, { merge: true });
-
-      lastPushAt = now;
-    }catch(e){ console.warn("Failed to update leaderboard:", e); }
-  }
-
-  async function loadLeaderboard(){
-    lbList.innerHTML = "";
-    if (!db){
-      const li = document.createElement("li");
-      li.textContent = "Leaderboard not connected.";
-      lbList.appendChild(li);
-      return;
-    }
-    try{
-      const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${doc.id} — ${d.score}`;
-        lbList.appendChild(li);
-      });
-      if (lbList.children.length === 0){
-        const li = document.createElement("li");
-        li.textContent = "No entries yet.";
-        lbList.appendChild(li);
-      }
-    }catch(e){
-      const li = document.createElement("li");
-      li.textContent = "Error loading leaderboard.";
-      lbList.appendChild(li);
-    }
-  }
-
-  leaderboardBtn.addEventListener("click", ()=>{
-    refreshNameUI();
-    loadLeaderboard();
-    lbBackdrop.style.display = "flex";
-    void document.body.offsetWidth;
-    lbBackdrop.setAttribute("aria-hidden","false");
-  });
-  closeLeaderboardBtn.addEventListener("click", ()=>{
-    lbBackdrop.setAttribute("aria-hidden","true");
-    setTimeout(()=> lbBackdrop.style.display = "none", 250);
-  });
-  lbBackdrop.addEventListener("click", (e)=>{
-    if (e.target === lbBackdrop) closeLeaderboardBtn.click();
-  });
-
-  // ----- Announcements -----
-  async function loadAnnouncement(){
-    if (!db || !banner) return;
-    try {
-      const snap = await db.collection("announcements").orderBy("created","desc").limit(1).get();
-      if (!snap.empty){
-        const msg = snap.docs[0].data().message;
-        banner.textContent = "📢 " + msg;
-        banner.classList.remove("hidden");
-      } else {
-        banner.classList.add("hidden");
-      }
-    } catch(e){
-      console.warn("Announcement load error:", e);
-    }
-  }
-
-  // ----- Events -----
-  async function loadEvent(){
-    if (!db || !eventBanner) return;
-    try {
-      const doc = await db.collection("events").doc("current").get();
-      if (doc.exists){
-        const d = doc.data();
-        eventMultiplier = d.multiplier || 1;
-        eventName = d.name || "";
-        eventBanner.textContent = `🎉 ${eventName} — ${eventMultiplier}x Bigbacks!`;
-        eventBanner.classList.remove("hidden");
-      } else {
-        eventMultiplier = 1;
-        eventName = "";
-        eventBanner.classList.add("hidden");
-      }
-      updateDisplay();
-    } catch(e){
-      console.warn("Event load error:", e);
-    }
-  }
-
-  // Init
-  loadState();
-  updateDisplay();
-  refreshNameUI();
-  loadAnnouncement();
-  setInterval(loadAnnouncement, 60000);
-
-  loadEvent();
-  setInterval(loadEvent, 30000);
-
-  // 🔹 Leaderboard refresh every 60s
-  setInterval(loadLeaderboard, 60000);
-});
+      await
