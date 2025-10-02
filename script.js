@@ -1,361 +1,180 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // ----- DOM Refs -----
-  const button = document.getElementById("revealBtn");
-  const result = document.getElementById("result");
-  const drumroll = document.getElementById("drumroll");
-  const scoreDisplay = document.getElementById("score");
-  const bpsDisplay = document.getElementById("bps");
+// ----- DOM Refs -----
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginSection = document.getElementById("loginSection");
+const adminContent = document.getElementById("adminContent");
+const welcomeMsg = document.getElementById("welcomeMsg");
 
-  const shopBackdrop = document.getElementById("shop");
-  const shopBtn = document.getElementById("shopBtn");
-  const closeShopBtn = document.getElementById("closeShopBtn");
+const announcementInput = document.getElementById("announcementInput");
+const postAnnouncementBtn = document.getElementById("postAnnouncementBtn");
 
-  const buySebBtn = document.getElementById("buySebBtn");
-  const buyMichaelBtn = document.getElementById("buyMichaelBtn");
-  const buyIbrahimBtn = document.getElementById("buyIbrahimBtn");
-  const buyBobbyBtn = document.getElementById("buyBobbyBtn");
-  const buyPeterBtn = document.getElementById("buyPeterBtn");
-  const buyAaravBtn = document.getElementById("buyAaravBtn");
-  const buyAlexBtn = document.getElementById("buyAlexBtn");
-  const buyOscarBtn = document.getElementById("buyOscarBtn");
-  const buySebUltimateBtn = document.getElementById("buySebUltimateBtn");
-  const buyHarveyBtn = document.getElementById("buyHarveyBtn");
+const eventNameInput = document.getElementById("eventNameInput");
+const eventMultiplierInput = document.getElementById("eventMultiplierInput");
+const setEventBtn = document.getElementById("setEventBtn");
+const clearEventBtn = document.getElementById("clearEventBtn");
 
-  const sebOwnedDisplay = document.getElementById("sebOwned");
-  const michaelOwnedDisplay = document.getElementById("michaelOwned");
-  const ibrahimOwnedDisplay = document.getElementById("ibrahimOwned");
-  const bobbyOwnedDisplay = document.getElementById("bobbyOwned");
-  const peterOwnedDisplay = document.getElementById("peterOwned");
-  const aaravOwnedDisplay = document.getElementById("aaravOwned");
-  const alexOwnedDisplay = document.getElementById("alexOwned");
-  const oscarOwnedDisplay = document.getElementById("oscarOwned");
-  const sebUltimateOwnedDisplay = document.getElementById("sebUltimateOwned");
-  const harveyOwnedDisplay = document.getElementById("harveyOwned");
-  const errorMsg = document.getElementById("errorMsg");
+const lbList = document.getElementById("leaderboardList");
 
-  // Leaderboard DOM
-  const leaderboardBtn = document.getElementById("leaderboardBtn");
-  const lbBackdrop = document.getElementById("leaderboardBackdrop");
-  const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
-  const lbList = document.getElementById("leaderboardList");
-  const nameRow = document.getElementById("nameRow");
-  const playerNameInput = document.getElementById("playerNameInput");
-  const saveNameBtn = document.getElementById("saveNameBtn");
-  const youAre = document.getElementById("youAre");
-  const deleteNameBtn = document.getElementById("deleteNameBtn");
+const resetPlayerInput = document.getElementById("resetPlayerInput");
+const resetPlayerBtn = document.getElementById("resetPlayerBtn");
+const resetAllBtn = document.getElementById("resetAllBtn");
 
-  // Announcement + Event DOM
-  const banner = document.getElementById("announcementBanner");
-  const eventBanner = document.getElementById("eventBanner");
-
-  // Audio map
-  const audios = {
-    "Sebastian Kavanagh": document.getElementById("sebastianAudio"),
-    "Michael Winsor": document.getElementById("michaelAudio"),
-    "Ibrahim": document.getElementById("ibrahimAudio"),
-    "Bobby": document.getElementById("bobbyAudio"),
-    "Peter": document.getElementById("peterAudio"),
-    "Aarav Sahni": document.getElementById("aaravAudio"),
-  };
-
-  // ----- Game State -----
-  const STORAGE_KEY = "bb_state_v4";
-  const NAME_KEY = "bb_player_name";
-  let bigbacks = 0;
-
-  let shopItems = {
-    seb:       { cost: 20,        bps: 1,          owned: 0, button: buySebBtn,       ownedEl: sebOwnedDisplay },
-    michael:   { cost: 50,        bps: 5,          owned: 0, button: buyMichaelBtn,   ownedEl: michaelOwnedDisplay },
-    ibrahim:   { cost: 100,       bps: 10,         owned: 0, button: buyIbrahimBtn,   ownedEl: ibrahimOwnedDisplay },
-    bobby:     { cost: 500,       bps: 100,        owned: 0, button: buyBobbyBtn,     ownedEl: bobbyOwnedDisplay },
-    peterGen:  { cost: 5000,      bps: 3000,       owned: 0, button: buyPeterBtn,     ownedEl: peterOwnedDisplay },
-    aaravGen:  { cost: 10000,     bps: 1000,       owned: 0, button: buyAaravBtn,     ownedEl: aaravOwnedDisplay },
-    alex:      { cost: 100000,    bps: 10000,      owned: 0, button: buyAlexBtn,      ownedEl: alexOwnedDisplay },
-    oscar:     { cost: 1000000,   bps: 100000,     owned: 0, button: buyOscarBtn,     ownedEl: oscarOwnedDisplay },
-    sebUltimate:{ cost: 1000000000, bps: 10000000, owned: 0, button: buySebUltimateBtn, ownedEl: sebUltimateOwnedDisplay },
-    harvey:    { cost: 5000000000, bps: 300000000, owned: 0, button: buyHarveyBtn,    ownedEl: harveyOwnedDisplay },
-  };
-
-  // ----- Event State -----
-  let eventMultiplier = 1;
-  let eventName = "";
-
-  // ----- Functions -----
-  function calcBPS(){
-    return Object.values(shopItems).reduce((s,i)=>s+i.owned*i.bps,0);
+// ----- Login -----
+loginBtn.addEventListener("click", async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await window.auth.signInWithPopup(provider);
+  } catch (err) {
+    console.warn("Popup login failed, trying redirect:", err.message);
+    await window.auth.signInWithRedirect(provider);
   }
+});
 
-  function saveState(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      bigbacks, last: Date.now(),
-      items: Object.fromEntries(Object.entries(shopItems).map(([k,v])=>[k,{cost:v.cost, owned:v.owned}]))
-    }));
+// ----- Logout -----
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await window.auth.signOut();
+    alert("Logged out!");
+    location.reload();
+  } catch (err) {
+    alert("Logout failed: " + err.message);
   }
+});
 
-  function loadState(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    try{
-      const d = JSON.parse(raw);
-      bigbacks = d.bigbacks || 0;
-      if (d.items){
-        for (const k in d.items){
-          if (shopItems[k]){
-            shopItems[k].owned = d.items[k].owned ?? shopItems[k].owned;
-            shopItems[k].cost  = d.items[k].cost  ?? shopItems[k].cost;
-          }
-        }
-      }
-      const away = Math.max(0, Math.floor((Date.now() - (d.last || Date.now()))/1000));
-      bigbacks += away * calcBPS() * eventMultiplier;
-    }catch{}
+// ----- Auth State -----
+window.auth.onAuthStateChanged(user => {
+  console.log("🔑 Auth state changed:", user?.email);
+  if (user && user.email === "aaravsahni1037@gmail.com") {
+    console.log("✅ Admin login success:", user.email);
+    loginSection.classList.add("hidden");
+    adminContent.classList.remove("hidden");
+    welcomeMsg.textContent = `Welcome, ${user.displayName || user.email}`;
+    loadLeaderboard();
+    // 🔹 Only refresh once per minute
+    setInterval(loadLeaderboard, 60000);
+  } else {
+    loginSection.classList.remove("hidden");
+    adminContent.classList.add("hidden");
+    if (user) console.warn("⚠️ Wrong Gmail:", user.email);
   }
+});
 
-  function updateDisplay(){
-    scoreDisplay.textContent = Math.floor(bigbacks);
-    bpsDisplay.textContent   = Math.floor(calcBPS() * eventMultiplier);
-    for (const k in shopItems){
-      const it = shopItems[k];
-      it.button.textContent = `Buy (Cost: ${Math.floor(it.cost)})`;
-      it.ownedEl.textContent = `Owned: ${it.owned}`;
-    }
-    saveState();
-    maybePushLeaderboard();
-  }
-
-  // RNG with 0.01% Aarav chance
-  function pickWinner(){
-    const r = Math.floor(Math.random()*10000); // 0–9999
-    if (r < 8000) return "Sebastian Kavanagh"; // 80%
-    if (r < 9000) return "Michael Winsor";     // 10%
-    if (r < 9500) return "Ibrahim";            // 5%
-    if (r < 9600) return "Bobby";              // 1%
-    if (r < 9999) return "Peter";              // 3.99%
-    return "Aarav Sahni";                      // 0.01%
-  }
-
-  // Reveal button
-  button.addEventListener("click", ()=>{
-    result.style.display = "none";
-    drumroll.currentTime = 0;
-    drumroll.play().catch(()=>{});
-
-    setTimeout(()=>{
-      const winner = pickWinner();
-      let earned = 0;
-
-      if (winner==="Sebastian Kavanagh") earned = 1;
-      else if (winner==="Michael Winsor") earned = 5;
-      else if (["Ibrahim","Bobby","Peter"].includes(winner)) earned = 10;
-      else if (winner==="Aarav Sahni") earned = 1000000;
-
-      earned = Math.floor(earned * eventMultiplier);
-      bigbacks += earned;
-
-      result.textContent = `${winner} (+${earned})`;
-      result.style.display = "block";
-      updateDisplay();
-
-      drumroll.pause();
-      const a = audios[winner];
-      if (a){ a.currentTime = 0; a.play().catch(()=>{}); }
-    }, 2500);
-  });
-
-  // Shop
-  shopBtn.addEventListener("click", ()=>{
-    shopBackdrop.style.display = "flex";
-    void document.body.offsetWidth;
-    shopBackdrop.setAttribute("aria-hidden","false");
-  });
-  closeShopBtn.addEventListener("click", ()=>{
-    shopBackdrop.setAttribute("aria-hidden","true");
-    setTimeout(()=> shopBackdrop.style.display = "none", 250);
-  });
-  shopBackdrop.addEventListener("click", (e)=>{
-    if (e.target === shopBackdrop) closeShopBtn.click();
-  });
-
-  function showError(msg="Not enough Bigbacks!"){
-    errorMsg.textContent = msg;
-    errorMsg.classList.add("show");
-    clearTimeout(showError._t);
-    showError._t = setTimeout(()=> errorMsg.classList.remove("show"), 2000);
-  }
-
-  for (const k in shopItems){
-    const it = shopItems[k];
-    it.button.addEventListener("click", ()=>{
-      if (bigbacks < it.cost){ showError(); return; }
-      bigbacks -= it.cost;
-      it.owned += 1;
-      it.cost = Math.ceil(it.cost * 1.2);
-      updateDisplay();
+// ----- Post Announcement -----
+postAnnouncementBtn.addEventListener("click", async () => {
+  const msg = announcementInput.value.trim();
+  if (!msg) return;
+  try {
+    await window.db.collection("announcements").add({
+      message: msg,
+      created: Date.now()
     });
+    console.log("✅ Announcement posted:", msg);
+    alert("Announcement posted!");
+    announcementInput.value = "";
+  } catch (err) {
+    console.error("❌ Failed to post announcement:", err);
+    alert("Failed to post: " + err.message);
   }
+});
 
-  setInterval(()=>{
-    const inc = calcBPS();
-    if (inc > 0){
-      const earned = Math.floor(inc * eventMultiplier);
-      bigbacks += earned;
-      updateDisplay();
-    }
-  }, 1000);
-
-  // ----- Leaderboard -----
-  const db = window._db || null;
-  let playerName = (localStorage.getItem(NAME_KEY) || "").trim().slice(0,24) || "";
-  let lastPushAt = 0;
-
-  function refreshNameUI(){
-    if (playerName){
-      nameRow.classList.add("hidden");
-      youAre.classList.remove("hidden");
-      youAre.textContent = `You are: ${playerName}`;
-    } else {
-      nameRow.classList.remove("hidden");
-      youAre.classList.add("hidden");
-    }
+// ----- Set Event -----
+setEventBtn.addEventListener("click", async () => {
+  const name = eventNameInput.value.trim();
+  const multiplier = parseFloat(eventMultiplierInput.value);
+  if (!name || isNaN(multiplier)) return;
+  try {
+    await window.db.collection("events").doc("current").set({
+      name,
+      multiplier,
+      created: Date.now()
+    });
+    console.log(`✅ Event set: ${name} x${multiplier}`);
+    alert("Event set!");
+  } catch (err) {
+    console.error("❌ Failed to set event:", err);
+    alert("Failed to set event: " + err.message);
   }
+});
 
-  saveNameBtn.addEventListener("click", ()=>{
-    const val = (playerNameInput.value || "").trim().slice(0,24);
-    if (!val) return;
-    playerName = val;
-    localStorage.setItem(NAME_KEY, playerName);
-    refreshNameUI();
-    maybePushLeaderboard(true);
-    loadLeaderboard();
-  });
-
-  // Remove Me button
-  async function deleteMyScore() {
-    if (!db || !playerName) return;
-    try {
-      await db.collection("leaderboard").doc(playerName).delete();
-      playerName = "";
-      localStorage.removeItem(NAME_KEY);
-      refreshNameUI();
-      loadLeaderboard();
-    } catch(e) {
-      console.error("Failed to delete score:", e);
-    }
+// ----- Clear Event -----
+clearEventBtn.addEventListener("click", async () => {
+  try {
+    await window.db.collection("events").doc("current").delete();
+    console.log("✅ Event cleared");
+    alert("Event cleared!");
+  } catch (err) {
+    console.error("❌ Failed to clear event:", err);
+    alert("Failed to clear event: " + err.message);
   }
-  if (deleteNameBtn) {
-    deleteNameBtn.addEventListener("click", deleteMyScore);
-  }
+});
 
-  async function maybePushLeaderboard(force=false){
-    if (!db || !playerName) return;
-    const now = Date.now();
-    const score = Math.floor(bigbacks);
+// ----- Load Leaderboard -----
+async function loadLeaderboard() {
+  lbList.innerHTML = "";
+  console.log("📊 Loading leaderboard...");
+  try {
+    const snap = await window.db.collection("leaderboard")
+      .orderBy("score", "desc")
+      .limit(50) // 🔹 50 players max
+      .get();
 
-    // 🔹 Only push once every 60s (unless forced)
-    if (!force && (now - lastPushAt < 60000)) return;
-
-    try {
-      await db.collection("leaderboard").doc(playerName).set({
-        score: score,
-        updated: now
-      }, { merge: true });
-
-      lastPushAt = now;
-    }catch(e){ console.warn("Failed to update leaderboard:", e); }
-  }
-
-  async function loadLeaderboard(){
-    lbList.innerHTML = "";
-    if (!db){
+    snap.forEach(doc => {
+      const d = doc.data();
       const li = document.createElement("li");
-      li.textContent = "Leaderboard not connected.";
+      li.textContent = `${doc.id} — ${d.score}`;
       lbList.appendChild(li);
-      return;
-    }
-    try{
-      const snap = await db.collection("leaderboard").orderBy("score","desc").limit(20).get();
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${doc.id} — ${d.score}`;
-        lbList.appendChild(li);
-      });
-      if (lbList.children.length === 0){
-        const li = document.createElement("li");
-        li.textContent = "No entries yet.";
-        lbList.appendChild(li);
-      }
-    }catch(e){
+    });
+
+    if (lbList.children.length === 0) {
       const li = document.createElement("li");
-      li.textContent = "Error loading leaderboard.";
+      li.textContent = "No players yet.";
       lbList.appendChild(li);
     }
-  }
 
-  leaderboardBtn.addEventListener("click", ()=>{
-    refreshNameUI();
+    console.log("✅ Leaderboard loaded with", lbList.children.length, "entries");
+  } catch (err) {
+    console.error("❌ Leaderboard load error:", err);
+    const li = document.createElement("li");
+    li.textContent = "Error loading leaderboard.";
+    lbList.appendChild(li);
+  }
+}
+
+// ----- Reset Scores -----
+resetPlayerBtn.addEventListener("click", async () => {
+  const player = resetPlayerInput.value.trim();
+  if (!player) return;
+  try {
+    await window.db.collection("leaderboard").doc(player).set({
+      score: 0,
+      updated: Date.now(),
+      forceReset: true
+    }, { merge: true });
+    console.log(`✅ Player reset: ${player}`);
+    alert(`Reset ${player}'s score to 0!`);
     loadLeaderboard();
-    lbBackdrop.style.display = "flex";
-    void document.body.offsetWidth;
-    lbBackdrop.setAttribute("aria-hidden","false");
-  });
-  closeLeaderboardBtn.addEventListener("click", ()=>{
-    lbBackdrop.setAttribute("aria-hidden","true");
-    setTimeout(()=> lbBackdrop.style.display = "none", 250);
-  });
-  lbBackdrop.addEventListener("click", (e)=>{
-    if (e.target === lbBackdrop) closeLeaderboardBtn.click();
-  });
-
-  // ----- Announcements -----
-  async function loadAnnouncement(){
-    if (!db || !banner) return;
-    try {
-      const snap = await db.collection("announcements").orderBy("created","desc").limit(1).get();
-      if (!snap.empty){
-        const msg = snap.docs[0].data().message;
-        banner.textContent = "📢 " + msg;
-        banner.classList.remove("hidden");
-      } else {
-        banner.classList.add("hidden");
-      }
-    } catch(e){
-      console.warn("Announcement load error:", e);
-    }
+  } catch (err) {
+    console.error("❌ Failed to reset player:", err);
+    alert("Failed to reset: " + err.message);
   }
+});
 
-  // ----- Events -----
-  async function loadEvent(){
-    if (!db || !eventBanner) return;
-    try {
-      const doc = await db.collection("events").doc("current").get();
-      if (doc.exists){
-        const d = doc.data();
-        eventMultiplier = d.multiplier || 1;
-        eventName = d.name || "";
-        eventBanner.textContent = `🎉 ${eventName} — ${eventMultiplier}x Bigbacks!`;
-        eventBanner.classList.remove("hidden");
-      } else {
-        eventMultiplier = 1;
-        eventName = "";
-        eventBanner.classList.add("hidden");
-      }
-      updateDisplay();
-    } catch(e){
-      console.warn("Event load error:", e);
-    }
+resetAllBtn.addEventListener("click", async () => {
+  if (!confirm("Are you sure you want to reset ALL scores?")) return;
+  try {
+    const snap = await window.db.collection("leaderboard").get();
+    const batch = window.db.batch();
+    let count = 0;
+    snap.forEach(doc => {
+      batch.set(doc.ref, { score: 0, updated: Date.now(), forceReset: true }, { merge: true });
+      count++;
+    });
+    await batch.commit();
+    console.log(`✅ Reset ALL scores (${count} players)`);
+    alert("All scores reset!");
+    loadLeaderboard();
+  } catch (err) {
+    console.error("❌ Failed to reset all:", err);
+    alert("Failed to reset all: " + err.message);
   }
-
-  // Init
-  loadState();
-  updateDisplay();
-  refreshNameUI();
-  loadAnnouncement();
-  setInterval(loadAnnouncement, 60000);
-
-  loadEvent();
-  setInterval(loadEvent, 30000);
-
-  // 🔹 Leaderboard refresh every 60s
-  setInterval(loadLeaderboard, 60000);
 });
