@@ -1,10 +1,3 @@
-@font-face {
-  font-family: "Monocraft";
-  src: url("Monocraft.woff2") format("woff2"),
-       url("Monocraft.woff") format("woff");
-  font-display: swap;
-}
-
 :root {
   --bg-1: #2e3c32;
   --bg-2: #243229;
@@ -24,17 +17,20 @@ html,body { height:100%; }
 body {
   margin:0;
   min-height:100vh;
-  font-family: Monocraft, system-ui, sans-serif;
+  font-family: "Press Start 2P", system-ui, sans-serif;
   color: var(--text);
   background: radial-gradient(1200px 800px at 50% 30%, var(--bg-1), var(--bg-2));
-  background-attachment: scroll; /* ✅ Safari fix */
+  background-attachment: scroll; /* Safari-safe */
+}
+@supports not (-webkit-touch-callout: none) {
+  body { background-attachment: fixed; }
 }
 
-/* Only apply fixed attachment on browsers that support it */
-@supports not (-webkit-touch-callout: none) {
-  body {
-    background-attachment: fixed;
-  }
+/* Normalize inputs/buttons across browsers */
+input, button {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
 }
 
 .wrap {
@@ -71,16 +67,9 @@ body {
 .shop-btn { padding:12px 22px; border-radius:999px; display:inline-flex; align-items:center; gap:10px; }
 .shop-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
 
-/* Normalize inputs/buttons across browsers */
-input, button {
-  -webkit-appearance: none;
-  appearance: none;
-  border-radius: 0;
-}
-
 /* Main CTA */
 #revealBtn {
-  font-family:Monocraft,system-ui,sans-serif;
+  font-family:"Press Start 2P",system-ui,sans-serif;
   font-size:clamp(1.2rem,3.2vw,2.2rem);
   cursor:pointer;
   padding:20px 54px !important;
