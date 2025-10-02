@@ -1,106 +1,119 @@
-@font-face {
-  font-family: "Monocraft";
-  src: url("Monocraft-nerd-fonts-patched.ttc") format("truetype");
-  font-display: swap;
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-:root {
-  --bg-1: #2e3c32;
-  --bg-2: #243229;
-  --sage: #A3B18A;
-  --sage-strong:#7D8F68;
-  --accent:#dde5cf;
-  --text:#ffffff;
-  --muted:#dfe6db;
-  --shadow: 0 10px 30px rgba(0,0,0,0.35);
-  --radius: 18px;
-}
-
-* { box-sizing: border-box; }
-.hidden { display: none !important; }
 
 body {
-  margin: 0;
-  font-family: Monocraft, system-ui, sans-serif;
-  color: var(--text);
-  background: radial-gradient(1200px 800px at 50% 30%, var(--bg-1), var(--bg-2));
-  background-attachment: fixed;
-  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  color: #222;
   padding: 20px;
 }
 
-.wrap {
-  max-width: 800px;
-  margin: auto;
+/* Card Layout */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-h1, h2 {
-  text-align: center;
+.card.soft {
+  border: 1px solid #ddd;
 }
 
+/* Buttons */
 .btn {
-  border: none;
-  cursor: pointer;
-  font: inherit;
-  color: var(--text);
-  background: linear-gradient(180deg, var(--sage), var(--sage-strong));
+  display: inline-block;
   padding: 10px 16px;
-  border-radius: 14px;
-  box-shadow: 0 6px 14px rgba(163,177,138,0.35);
-  margin: 6px 0;
+  margin-top: 8px;
+  margin-right: 6px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
 }
 
-.btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(0); filter: brightness(.95); }
-
-.btn.danger {
-  background: linear-gradient(180deg, #cc4444, #aa2222);
-  color: white;
+.btn:hover {
+  background: #0056b3;
 }
 
-.btn-small {
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  margin-left: 10px;
+.btn:disabled {
+  background: #888;
+  cursor: not-allowed;
 }
 
+/* Inputs */
 .input {
+  display: inline-block;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   width: 100%;
-  padding: 10px 12px;
-  margin: 6px 0;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
+  max-width: 280px;
 }
 
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+/* Headings */
+h1, h2 {
+  margin-bottom: 12px;
+  font-weight: 600;
 }
 
+/* Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Leaderboard List */
 .lb-list {
+  list-style: decimal inside;
+  padding: 0;
   margin: 0;
-  padding-left: 1.25rem;
-}
-.lb-list li {
-  margin: 6px 0;
-  font-size: 1.1rem;
 }
 
-.leaderboard-actions {
-  margin-top: 20px;
-  text-align: center;
+.lb-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* 🔹 Scrollable container for Leaderboard */
+.lb-container {
+  max-height: 400px;             /* limit height */
+  overflow-y: auto;              /* scroll if too many entries */
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 8px;
+  background: #fff;
 }
 
 /* Responsive */
-@media(max-width: 720px) {
-  .wrap {
+@media (max-width: 600px) {
+  body {
     padding: 10px;
   }
+
+  .card {
+    padding: 15px;
+  }
+
   .btn {
     width: 100%;
+    margin-top: 10px;
+    margin-right: 0;
+  }
+
+  .input {
+    max-width: 100%;
   }
 }
