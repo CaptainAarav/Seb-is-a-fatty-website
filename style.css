@@ -1,6 +1,7 @@
 @font-face {
   font-family: "Monocraft";
-  src: url("Monocraft-nerd-fonts-patched.ttc") format("truetype");
+  src: url("Monocraft.woff2") format("woff2"),
+       url("Monocraft.woff") format("woff");
   font-display: swap;
 }
 
@@ -26,7 +27,14 @@ body {
   font-family: Monocraft, system-ui, sans-serif;
   color: var(--text);
   background: radial-gradient(1200px 800px at 50% 30%, var(--bg-1), var(--bg-2));
-  background-attachment: fixed;
+  background-attachment: scroll; /* ✅ Safari fix */
+}
+
+/* Only apply fixed attachment on browsers that support it */
+@supports not (-webkit-touch-callout: none) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 .wrap {
@@ -62,6 +70,13 @@ body {
 .icon-btn { background:transparent; border:1px solid rgba(255,255,255,.15); }
 .shop-btn { padding:12px 22px; border-radius:999px; display:inline-flex; align-items:center; gap:10px; }
 .shop-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+
+/* Normalize inputs/buttons across browsers */
+input, button {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
 
 /* Main CTA */
 #revealBtn {
